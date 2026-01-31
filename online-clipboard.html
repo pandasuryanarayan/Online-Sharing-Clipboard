@@ -1,0 +1,608 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>SecureShare Pro | Encrypted Clipboard</title>
+    
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/crypto-js/4.1.1/crypto-js.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/marked/4.3.0/marked.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
+
+    <style>
+        :root {
+            --primary: #4f46e5;
+            --primary-hover: #4338ca;
+            --bg: #f9fafb;
+            --card: #ffffff;
+            --text: #111827;
+            --text-light: #6b7280;
+            --border: #e5e7eb;
+            --danger: #ef4444;
+            --success: #10b981;
+            --shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1);
+        }
+
+        [data-theme="dark"] {
+            --primary: #6366f1;
+            --primary-hover: #818cf8;
+            --bg: #111827;
+            --card: #1f2937;
+            --text: #f3f4f6;
+            --text-light: #9ca3af;
+            --border: #374151;
+            --shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.5);
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+            background-color: var(--bg);
+            color: var(--text);
+            margin: 0;
+            padding: 20px;
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            transition: background-color 0.3s, color 0.3s;
+        }
+
+        /* Header & Nav */
+        .nav-bar {
+            width: 100%;
+            max-width: 700px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 20px;
+        }
+
+        .logo { font-weight: 800; font-size: 1.2rem; color: var(--primary); display: flex; align-items: center; gap: 5px; }
+        
+        .nav-actions button {
+            background: none;
+            color: var(--text);
+            padding: 8px;
+            width: auto;
+            border: 1px solid var(--border);
+            margin-left: 10px;
+        }
+
+        /* Main Container */
+        .container {
+            background: var(--card);
+            padding: 2rem;
+            border-radius: 16px;
+            box-shadow: var(--shadow);
+            width: 100%;
+            max-width: 700px;
+            position: relative;
+            box-sizing: border-box;
+        }
+
+        /* Inputs */
+        textarea {
+            width: 100%;
+            height: 200px;
+            padding: 15px;
+            border: 1px solid var(--border);
+            border-radius: 10px;
+            resize: vertical;
+            font-family: 'Courier New', Courier, monospace;
+            font-size: 1rem;
+            background: var(--bg);
+            color: var(--text);
+            margin-bottom: 1rem;
+            box-sizing: border-box;
+        }
+
+        input[type="text"], input[type="password"], select {
+            width: 100%;
+            padding: 12px;
+            border: 1px solid var(--border);
+            border-radius: 8px;
+            background: var(--bg);
+            color: var(--text);
+            box-sizing: border-box;
+            margin-bottom: 15px;
+        }
+
+        .options-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 15px; margin-bottom: 15px; }
+        .full-width { grid-column: span 2; }
+
+        /* Buttons */
+        button {
+            background-color: var(--primary);
+            color: white;
+            border: none;
+            padding: 14px;
+            border-radius: 8px;
+            cursor: pointer;
+            font-weight: 600;
+            width: 100%;
+            font-size: 1rem;
+            transition: 0.2s;
+        }
+        button:hover { background-color: var(--primary-hover); transform: translateY(-1px); }
+        button.secondary { background-color: transparent; border: 1px solid var(--border); color: var(--text); }
+        button.secondary:hover { background-color: var(--bg); }
+        button.danger { background-color: var(--danger); }
+
+        /* Toggles */
+        .toggle-wrapper {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            margin-bottom: 15px;
+            font-size: 0.9rem;
+            color: var(--text-light);
+            cursor: pointer;
+        }
+        .toggle-switch {
+            position: relative;
+            display: inline-block;
+            width: 44px;
+            height: 24px;
+        }
+        .toggle-switch input { opacity: 0; width: 0; height: 0; }
+        .slider {
+            position: absolute;
+            cursor: pointer;
+            top: 0; left: 0; right: 0; bottom: 0;
+            background-color: var(--border);
+            border-radius: 34px;
+            transition: .4s;
+        }
+        .slider:before {
+            position: absolute;
+            content: "";
+            height: 18px;
+            width: 18px;
+            left: 3px;
+            bottom: 3px;
+            background-color: white;
+            border-radius: 50%;
+            transition: .4s;
+        }
+        input:checked + .slider { background-color: var(--primary); }
+        input:checked + .slider:before { transform: translateX(20px); }
+
+        /* Result Area */
+        #result-area {
+            margin-top: 20px;
+            padding: 20px;
+            background: var(--bg);
+            border-radius: 12px;
+            text-align: center;
+            border: 1px solid var(--border);
+        }
+        #share-link {
+            word-break: break-all;
+            color: var(--primary);
+            font-weight: bold;
+            font-size: 0.9rem;
+            margin: 10px 0;
+            display: block;
+            padding: 10px;
+            background: var(--card);
+            border-radius: 6px;
+            border: 1px dashed var(--primary);
+        }
+        #qrcode {
+            display: flex;
+            justify-content: center;
+            margin: 20px 0;
+            padding: 10px;
+            background: white; /* QR needs white bg */
+            border-radius: 8px;
+            width: fit-content;
+            margin-left: auto;
+            margin-right: auto;
+        }
+
+        /* Markdown Content */
+        .markdown-body {
+            text-align: left;
+            padding: 20px;
+            background: var(--bg);
+            border-radius: 8px;
+            border: 1px solid var(--border);
+            overflow-x: auto;
+            line-height: 1.6;
+        }
+        .markdown-body code {
+            background: rgba(100,100,100,0.1);
+            padding: 2px 4px;
+            border-radius: 4px;
+            font-family: monospace;
+        }
+        .markdown-body pre {
+            background: rgba(0,0,0,0.8);
+            color: white;
+            padding: 15px;
+            border-radius: 8px;
+            overflow-x: auto;
+        }
+
+        /* History Modal */
+        #history-panel {
+            position: fixed;
+            top: 0; right: -320px;
+            width: 300px;
+            height: 100%;
+            background: var(--card);
+            box-shadow: -5px 0 15px rgba(0,0,0,0.1);
+            transition: 0.3s;
+            z-index: 100;
+            padding: 20px;
+            overflow-y: auto;
+        }
+        #history-panel.open { right: 0; }
+        .history-item {
+            padding: 10px;
+            border-bottom: 1px solid var(--border);
+            cursor: pointer;
+            font-size: 0.9rem;
+        }
+        .history-item:hover { background: var(--bg); }
+        .history-date { font-size: 0.75rem; color: var(--text-light); }
+
+        .hidden { display: none !important; }
+        .error { color: var(--danger); text-align: center; padding: 10px; background: rgba(239, 68, 68, 0.1); border-radius: 8px; }
+        .blur-overlay { position: fixed; top:0; left:0; width:100%; height:100%; background: rgba(0,0,0,0.5); z-index: 90; display: none;}
+        
+        /* Loading Spinner */
+        .spinner {
+            border: 3px solid rgba(0, 0, 0, 0.1);
+            border-radius: 50%;
+            border-top: 3px solid var(--primary);
+            width: 20px;
+            height: 20px;
+            animation: spin 1s linear infinite;
+            margin: 0 auto;
+        }
+        @keyframes spin { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }
+
+    </style>
+</head>
+<body>
+
+    <div class="nav-bar">
+        <div class="logo">🔒 SecureShare <span style="font-size: 0.8em; color: var(--text-light); font-weight:normal;">Pro</span></div>
+        <div class="nav-actions">
+            <button class="secondary" onclick="toggleTheme()" title="Toggle Dark Mode">🌓</button>
+            <button class="secondary" onclick="toggleHistory()" title="History">🕒</button>
+        </div>
+    </div>
+
+    <div class="blur-overlay" id="overlay" onclick="toggleHistory()"></div>
+    <div id="history-panel">
+        <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:20px;">
+            <h3>Recents</h3>
+            <button class="secondary" style="width:auto; padding:5px 10px;" onclick="clearHistory()">Clear</button>
+        </div>
+        <div id="history-list">
+            <p style="color:var(--text-light); text-align:center;">No history yet.</p>
+        </div>
+    </div>
+
+    <div class="container">
+        
+        <div id="create-view">
+            <h2>Create Encrypted Clip</h2>
+            
+            <textarea id="clip-text" placeholder="Type your content here (Markdown supported)..."></textarea>
+
+            <div class="options-grid">
+                <div>
+                    <label style="display:block; margin-bottom:5px; font-size:0.9rem;">Expiration</label>
+                    <select id="expiry-select">
+                        <option value="0">Never</option>
+                        <option value="5">5 Minutes</option>
+                        <option value="60">1 Hour</option>
+                        <option value="1440">1 Day</option>
+                        <option value="10080">1 Week</option>
+                    </select>
+                </div>
+                <div>
+                    <label style="display:block; margin-bottom:5px; font-size:0.9rem;">Password (Encrypt)</label>
+                    <input type="password" id="password-input" placeholder="Optional security...">
+                </div>
+            </div>
+
+            <div class="toggle-wrapper">
+                <label class="toggle-switch">
+                    <input type="checkbox" id="burn-toggle">
+                    <span class="slider"></span>
+                </label>
+                <span>🔥 Burn after reading (Delete on view)</span>
+            </div>
+
+            <button onclick="generateLink()">Generate Secure Link</button>
+
+            <div id="result-area" class="hidden">
+                <h3 style="margin-top:0;">Link Created!</h3>
+                <div id="qrcode"></div>
+                <div id="share-link"></div>
+                
+                <div class="options-grid">
+                    <button class="secondary" onclick="copyLink()">📋 Copy Link</button>
+                    <button class="secondary" onclick="openShortener()">✂️ Shorten</button>
+                </div>
+            </div>
+        </div>
+
+        <div id="unlock-view" class="hidden" style="text-align: center;">
+            <h2>🔒 Encrypted Content</h2>
+            <p style="color: var(--text-light);">This content is protected with AES-256 encryption.</p>
+            <input type="password" id="unlock-password" placeholder="Enter password..." style="max-width: 300px; margin: 20px auto;">
+            <button onclick="attemptUnlock()" style="max-width: 300px;">Unlock</button>
+            <p id="unlock-error" class="error hidden" style="margin-top:15px;">Incorrect Password or Corrupted Data</p>
+        </div>
+
+        <div id="read-view" class="hidden">
+            <div style="display:flex; justify-content:space-between; align-items:center;">
+                <h2>📄 Shared Clip</h2>
+                <span id="burn-badge" class="hidden" style="background:var(--danger); color:white; padding:4px 8px; border-radius:4px; font-size:0.8rem;">🔥 Burned</span>
+            </div>
+            <p id="expiry-display" style="color:var(--text-light); font-size:0.9rem; margin-top:-10px;"></p>
+            
+            <div id="content-display" class="markdown-body"></div>
+            
+            <div class="options-grid" style="margin-top: 20px;">
+                <button onclick="copyContent()">Copy Content</button>
+                <button class="secondary" onclick="window.location.href = window.location.pathname.split('?')[0]">Create New</button>
+            </div>
+        </div>
+
+        <div id="error-view" class="hidden" style="text-align: center;">
+            <div style="font-size: 3rem;">⚠️</div>
+            <h2>Content Unavailable</h2>
+            <p>This clip has expired, was burned, or the URL is invalid.</p>
+            <button onclick="window.location.href = window.location.pathname.split('?')[0]">Create New Clip</button>
+        </div>
+
+    </div>
+
+    <script>
+        // --- CONFIG & STATE ---
+        const appState = {
+            encryptedData: null,
+            expiry: 0,
+            isBurn: false,
+            hasPassword: false
+        };
+
+        // --- INIT ---
+        window.onload = function() {
+            // Check Theme
+            if(localStorage.getItem('theme') === 'dark') {
+                document.body.setAttribute('data-theme', 'dark');
+            }
+            // Check URL Data
+            const params = new URLSearchParams(window.location.search);
+            const data = params.get('d');
+            if (data) {
+                processIncomingData(data);
+            }
+        };
+
+        // --- CORE LOGIC: GENERATE ---
+        function generateLink() {
+            const text = document.getElementById('clip-text').value;
+            const password = document.getElementById('password-input').value;
+            const expiryMinutes = parseInt(document.getElementById('expiry-select').value);
+            const isBurn = document.getElementById('burn-toggle').checked;
+
+            if (!text) { alert("Please enter text."); return; }
+
+            // 1. Calculate Expiry
+            let expiryTime = 0;
+            if (expiryMinutes > 0) {
+                expiryTime = new Date().getTime() + (expiryMinutes * 60 * 1000);
+            }
+
+            // 2. Prepare Payload
+            const payload = {
+                t: text,
+                e: expiryTime,
+                b: isBurn ? 1 : 0
+            };
+
+            // 3. Encrypt (AES)
+            // If password is empty, we use a default internal key so the URL is still obfuscated
+            // If password exists, we use it.
+            const secret = password || "public-share-default-key"; 
+            const encrypted = CryptoJS.AES.encrypt(JSON.stringify(payload), secret).toString();
+
+            // 4. Create Flag for URL (p=1 means password required)
+            const passFlag = password ? 1 : 0;
+
+            // 5. Build URL Data Object
+            // Format: { d: encryptedString, p: hasPasswordFlag }
+            const finalData = {
+                d: encrypted,
+                p: passFlag
+            };
+
+            // 6. Encode to Base64 safe URL
+            const urlSafeBase64 = btoa(JSON.stringify(finalData));
+            const fullUrl = `${window.location.href.split('?')[0]}?d=${urlSafeBase64}`;
+
+            // 7. Render Result
+            showResult(fullUrl);
+            saveToHistory(text.substring(0, 30) + "...", fullUrl);
+        }
+
+        function showResult(url) {
+            document.getElementById('result-area').classList.remove('hidden');
+            document.getElementById('share-link').innerText = url;
+            
+            // Generate QR
+            document.getElementById('qrcode').innerHTML = "";
+            new QRCode(document.getElementById('qrcode'), {
+                text: url,
+                width: 128,
+                height: 128
+            });
+        }
+
+        // --- CORE LOGIC: READ ---
+        function processIncomingData(encodedStr) {
+            document.getElementById('create-view').classList.add('hidden');
+            
+            try {
+                // Decode URL Param
+                const jsonString = atob(encodedStr);
+                const wrapper = JSON.parse(jsonString); // {d: "...", p: 1/0}
+
+                appState.encryptedData = wrapper.d;
+                appState.hasPassword = wrapper.p === 1;
+
+                if (appState.hasPassword) {
+                    document.getElementById('unlock-view').classList.remove('hidden');
+                } else {
+                    // Auto decrypt with default key
+                    decryptAndShow("public-share-default-key");
+                }
+            } catch (e) {
+                showError();
+            }
+        }
+
+        function attemptUnlock() {
+            const password = document.getElementById('unlock-password').value;
+            decryptAndShow(password);
+        }
+
+        function decryptAndShow(secret) {
+            try {
+                const bytes = CryptoJS.AES.decrypt(appState.encryptedData, secret);
+                const originalText = bytes.toString(CryptoJS.enc.Utf8);
+                
+                if (!originalText) throw new Error("Decryption failed");
+
+                const payload = JSON.parse(originalText);
+
+                // 1. Check Expiry
+                if (payload.e > 0 && new Date().getTime() > payload.e) {
+                    showError("expired");
+                    return;
+                }
+
+                // 2. Check Burn
+                if (payload.b === 1) {
+                    // Execute Burn: Remove URL param immediately
+                    window.history.replaceState({}, document.title, window.location.pathname);
+                    document.getElementById('burn-badge').classList.remove('hidden');
+                    // Note: True security would require server deletion. 
+                    // This prevents refresh/back-button viewing.
+                }
+
+                // 3. Render
+                document.getElementById('unlock-view').classList.add('hidden');
+                document.getElementById('read-view').classList.remove('hidden');
+
+                // Render Markdown
+                document.getElementById('content-display').innerHTML = marked.parse(payload.t);
+                
+                // Expiry Text
+                const expDiv = document.getElementById('expiry-display');
+                if (payload.e > 0) {
+                    expDiv.innerText = "Expires: " + new Date(payload.e).toLocaleString();
+                } else {
+                    expDiv.innerText = "Does not expire.";
+                }
+
+                // Store raw text for copying
+                appState.rawText = payload.t;
+
+            } catch (e) {
+                console.error(e);
+                if (appState.hasPassword) {
+                    document.getElementById('unlock-error').classList.remove('hidden');
+                } else {
+                    showError();
+                }
+            }
+        }
+
+        // --- UTILS ---
+        
+        function copyLink() {
+            const url = document.getElementById('share-link').innerText;
+            navigator.clipboard.writeText(url).then(() => alert("Link Copied!"));
+        }
+
+        function copyContent() {
+            navigator.clipboard.writeText(appState.rawText).then(() => alert("Content Copied!"));
+        }
+
+        function openShortener() {
+            const longUrl = document.getElementById('share-link').innerText;
+            // Using TinyURL's create page to avoid CORS issues with client-side API calls
+            window.open(`https://tinyurl.com/create.php?url=${encodeURIComponent(longUrl)}`, '_blank');
+        }
+
+        function showError(type) {
+            document.querySelectorAll('.container > div').forEach(div => div.classList.add('hidden'));
+            document.getElementById('error-view').classList.remove('hidden');
+        }
+
+        function toggleTheme() {
+            const body = document.body;
+            if (body.hasAttribute('data-theme')) {
+                body.removeAttribute('data-theme');
+                localStorage.setItem('theme', 'light');
+            } else {
+                body.setAttribute('data-theme', 'dark');
+                localStorage.setItem('theme', 'dark');
+            }
+        }
+
+        // --- HISTORY SYSTEM ---
+        function toggleHistory() {
+            const panel = document.getElementById('history-panel');
+            const overlay = document.getElementById('overlay');
+            if (panel.classList.contains('open')) {
+                panel.classList.remove('open');
+                overlay.style.display = 'none';
+            } else {
+                renderHistory();
+                panel.classList.add('open');
+                overlay.style.display = 'block';
+            }
+        }
+
+        function saveToHistory(label, url) {
+            let hist = JSON.parse(localStorage.getItem('clipHistory') || '[]');
+            hist.unshift({ label: label, url: url, date: new Date().toLocaleString() });
+            if (hist.length > 10) hist.pop(); // Keep last 10
+            localStorage.setItem('clipHistory', JSON.stringify(hist));
+        }
+
+        function renderHistory() {
+            const list = document.getElementById('history-list');
+            const hist = JSON.parse(localStorage.getItem('clipHistory') || '[]');
+            
+            if (hist.length === 0) {
+                list.innerHTML = '<p style="color:var(--text-light); text-align:center;">No history yet.</p>';
+                return;
+            }
+
+            list.innerHTML = hist.map(item => `
+                <div class="history-item" onclick="window.location.href='${item.url}'">
+                    <div style="font-weight:600; overflow:hidden; text-overflow:ellipsis; white-space:nowrap;">${item.label}</div>
+                    <div class="history-date">${item.date}</div>
+                </div>
+            `).join('');
+        }
+
+        function clearHistory() {
+            localStorage.removeItem('clipHistory');
+            renderHistory();
+        }
+
+    </script>
+</body>
+</html>
