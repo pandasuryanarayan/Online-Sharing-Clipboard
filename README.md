@@ -86,7 +86,7 @@ You cannot hide a key in a purely static site. Any value the browser needs in or
 This project takes the first route, and the key is made worthless by design:
 
 - `clips` has RLS forced on with restrictive deny-all policies, so the key cannot read or write the table.
-- The only reachable operations are three functions, both of which validate their input.
+- The only reachable operations are three functions, all of which validate their input.
 - Creation is rate-limited per IP; reads require a UUID or a PIN the attacker does not have.
 - Nothing in the client can enumerate, list, update or delete clips.
 
