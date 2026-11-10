@@ -27,7 +27,7 @@ Share passwords, API keys and notes as encrypted links that **expire** and **bur
 
 ## Database
 
-One table and two public functions. `clips` has RLS enabled with **no policies**, so the publishable key cannot read or write it directly; all access is through `SECURITY DEFINER` functions.
+One table and two public functions. `clips` has row level security **forced on**, with RESTRICTIVE deny-all policies for `anon` and `authenticated`. Restrictive policies are ANDed with everything else, so a permissive policy added later by mistake still cannot open the table, and neither role holds any table privilege to begin with. Every read and write goes through the `SECURITY DEFINER` functions, which run as `postgres` and carry `BYPASSRLS`.
 
 | Function | Purpose |
 | --- | --- |
@@ -44,6 +44,7 @@ There is deliberately no owner-side API: once a clip is created, nobody — not 
 - Replaying an expired or exhausted link: the server refuses it.
 - A clip injecting HTML, `onerror` handlers or `javascript:` URLs into the reader's page — that output is stripped.
 - A compromised CDN silently swapping a library: both CDN scripts are pinned with Subresource Integrity, and the CSP blocks every other origin. `connect-src` allows only this project's API.
+- Direct database access with the publishable key: RLS is forced on, restrictive deny-all policies apply to `anon` and `authenticated`, and neither role holds a table privilege. Confirmed by attempting a `SELECT` as `anon`, which returns permission denied.
 - Abuse of the API key: it grants nothing beyond calling the two functions, which are rate-limited and validate every input.
 
 **Not protected against**
@@ -62,7 +63,7 @@ You cannot hide a key in a purely static site. Any value the browser needs in or
 
 This project takes the first route, and the key is made worthless by design:
 
-- `clips` has RLS on with no policies, so the key cannot read or write the table.
+- `clips` has RLS forced on with restrictive deny-all policies, so the key cannot read or write the table.
 - The only reachable operations are two functions, both of which validate their input.
 - Creation is rate-limited per IP; reads require a UUID the attacker does not have.
 - Nothing in the client can enumerate, list, update or delete clips.
