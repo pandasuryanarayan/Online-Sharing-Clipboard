@@ -63,6 +63,8 @@ class ApiError extends Error {
 
 const FRIENDLY = {
   rate_limited: 'Too many attempts from this connection in the last hour. Try again later.',
+  at_capacity: 'The service is at capacity right now. Try again in a little while.',
+  weak_pin: 'That PIN is too easy to guess. Try again.',
   invalid_pin: 'That PIN did not match anything. It may be wrong, expired, or already used.',
   pin_taken: 'That PIN is already in use. Try again.',
   pin_wrap_not_allowed: 'Could not set up the PIN. Please try again.',
