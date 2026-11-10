@@ -154,6 +154,33 @@ select 'the client address used for rate limits cannot be forged',
 
 union all
 
+select 'new objects in public are not granted to the API roles by default',
+       not exists (
+           select 1
+             from pg_default_acl d
+             join pg_namespace n on n.oid = d.defaclnamespace
+            where n.nspname = 'public'
+              and pg_get_userbyid(d.defaclrole) = 'postgres'
+              and exists (
+                  select 1 from aclexplode(d.defaclacl) a
+                   where a.grantee = 0
+                      or a.grantee in (select oid from pg_roles
+                                        where rolname in ('anon', 'authenticated'))
+              )
+       ),
+       coalesce((select string_agg(pg_get_userbyid(d.defaclrole) || ':' || d.defaclobjtype::text, ', ')
+                   from pg_default_acl d
+                   join pg_namespace n on n.oid = d.defaclnamespace
+                  where n.nspname = 'public'
+                    and pg_get_userbyid(d.defaclrole) = 'postgres'
+                    and exists (select 1 from aclexplode(d.defaclacl) a
+                                 where a.grantee = 0
+                                    or a.grantee in (select oid from pg_roles
+                                                      where rolname in ('anon', 'authenticated')))),
+                'no default grants to anon, authenticated or PUBLIC')
+
+union all
+
 -- Functions get EXECUTE for PUBLIC by default, so a function created without an
 -- explicit REVOKE is callable by every role in the database. That is exactly how
 -- create_clip() once drifted, and nothing else here would have noticed.
