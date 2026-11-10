@@ -32,7 +32,7 @@ You can also host it easily on static hosting platforms like GitHub Pages, Verce
 - Vanilla JavaScript
 - [CryptoJS](https://cryptojs.gitbook.io/docs/) (AES Encryption)
 - [Marked.js](https://marked.js.org/) (Markdown Parsing)
-- [QRCode.js](https://davidshimjs.github.io/qrcodejs/) (QR Code Generation)
+- [QRCode.js](https://davidshimps.github.io/qrcodejs/) (QR Code Generation)
 
 ## Security Note
 
@@ -40,4 +40,4 @@ While SecureShare Pro provides strong client-side encryption, please be aware th
 
 ## License
 
-This project is licensed under the MIT License - see the LICENSE file for details.
+This project is licensed under the GNU General Public License v3.0 - see the [LICENSE](LICENSE) file for details.
