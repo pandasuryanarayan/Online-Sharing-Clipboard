@@ -48,6 +48,19 @@ One table and three public functions. `clips` has row level security **forced on
 
 There is deliberately no owner-side API: once a clip is created, nobody — not even the sender — can read it back or delete it early. It disappears on its own when it expires or when its opens run out.
 
+Guardrails the database enforces on its own:
+
+- **5,000 live clips maximum.** Beyond that `create_clip` refuses with `at_capacity`, so the table cannot be flooded with junk and the 5-digit PIN space stays far from collision pressure.
+- **Trivial PINs are refused server-side** (`weak_pin`): five identical digits, any straight run up or down, and a short list of favourites. The client already uses a CSPRNG; this covers a modified client.
+- **Expired clips are purged every 15 minutes** by a `pg_cron` job, not only when someone happens to create a clip.
+- **The PIN pepper lives in Vault**, encrypted at rest with a key that is not in a database dump, so a stolen row cannot be reversed by trying all 100,000 PINs.
+
+### Security self-check
+
+`supabase/selfcheck.sql` asserts the invariants this design leans on, in one query: that `anon` can execute exactly `create_clip`, `read_clip` and `redeem_pin` and reach no table at all; that RLS is forced on `clips` with two restrictive deny-all policies; that the PIN-wrap constraint is present; that the PIN pepper lives only in Vault; that the purge job is active; and that `anon` cannot use the `private` schema. Run it after any schema change — every row must read `passed = true`.
+
+It is deliberately a query rather than a stored function: a check whose job is to prove the attack surface has not grown should not itself add to it. It has been tested the honest way — granting `anon` SELECT on `clips` makes the check fail with the offending table named, and revoking it makes it pass again.
+
 ## Security model
 
 **Protected against**
@@ -123,7 +136,7 @@ Open `index.html` over a local web server (`python3 -m http.server`) rather than
 ## Roadmap
 
 - Self-host the two remaining CDN libraries, removing the last third-party fetch.
-- Optional passphrase-protected link creation with a generated passphrase.
+- Raise the live-clip ceiling as demand grows; 5,000 is a guardrail, not a design limit.
 
 ## License
 
