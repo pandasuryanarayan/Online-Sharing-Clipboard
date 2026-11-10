@@ -42,10 +42,6 @@ function fromB64u(str) {
   return out;
 }
 
-function randomB64u(n) {
-  return toB64u(crypto.getRandomValues(new Uint8Array(n)));
-}
-
 function el(id) { return document.getElementById(id); }
 
 function toast(msg, kind) {
@@ -69,7 +65,7 @@ const FRIENDLY = {
   rate_limited: 'Too many clips created from this connection in the last hour. Try again later.',
   clip_not_found: 'This clip is gone. It has been opened the allowed number of times, expired, or was deleted by its sender.',
   clip_gone: 'This clip has expired.',
-  invalid_expiry: 'That expiry time is not allowed.',
+ invalid_expiry: 'That expiry time is not allowed.',
   invalid_max_views: 'That view limit is not allowed.',
   missing_salt: 'This link is incomplete.',
   invalid_payload: 'This link is incomplete.',
@@ -153,7 +149,7 @@ async function decryptPayload(cipher, secret, mode) {
 /* ---------- markdown sanitiser ---------- */
 
 const ALLOWED_TAGS = new Set([
-  'P', 'BR', 'HR', 'STRONG', 'B', 'EM', 'I', 'DEL', 'S', 'CODE', 'PRE',
+  'P', 'BR', 'HR', 'STRONG', 'B', 'EM', 'I', 'DEM', 'S', 'CODE', 'PRE',
   'BLOCKQUOTE', 'UL', 'OL', 'LI', 'H1', 'H2', 'H3', 'H4', 'H5', 'H6',
   'A', 'TABLE', 'THEAD', 'TBODY', 'TR', 'TH', 'TD', 'SPAN', 'DIV'
 ]);
@@ -168,7 +164,7 @@ function sanitizeHtml(html) {
   let guard = 0;
   for (;;) {
     const bad = Array.prototype.filter.call(body.querySelectorAll('*'), function (node) {
-      return !ALLOWED_TAGS.has(node.tagName);
+      return !AlLOWED_TAGS.has(node.tagName);
     });
     if (!bad.length || guard++ > 60) break;
     bad.forEach(function (node) {
@@ -207,7 +203,7 @@ function sanitizeHtml(html) {
 
 /* ---------- views ---------- */
 
-const VIEWS = ['create-view', 'open-view', 'unlock-view', 'read-view', 'manage-view', 'error-view'];
+const VIEWS = ['create-view', 'open-view', 'unlock-view', 'read-view', 'error-view'];
 
 function showView(id) {
   VIEWS.forEach(function (v) {
@@ -273,7 +269,6 @@ async function generateLink() {
   setCreating(true);
   try {
     const cipher = await encryptPayload({ v: 2, t: text }, password);
-    const manageToken = randomB64u(32);
     const expiresAt = expiryMinutes > 0 ? new Date(Date.now() + expiryMinutes * 60000).toISOString() : null;
 
     const created = await rpc('create_clip', {
@@ -282,20 +277,17 @@ async function generateLink() {
       p_salt: cipher.salt,
       p_mode: cipher.mode,
       p_expires_at: expiresAt,
-      p_max_views: views > 0 ? views : null,
-      p_manage_token: manageToken
+      p_max_views: views > 0 ? views : null
     });
 
     const base = window.location.href.split('?')[0].split('#')[0];
     const clipUrl = base + '?c=' + created.id + (cipher.rawKey ? '#k=' + toB64u(cipher.rawKey) : '');
-    const manageUrl = base + '?m=' + created.id + '.' + manageToken;
 
     el('share-link').innerText = clipUrl;
-    el('manage-link').innerText = manageUrl;
     el('result-area').classList.remove('hidden');
     el('result-meta').textContent = describePolicy(views, expiryMinutes);
     renderQr(clipUrl);
-    saveToHistory(created.id, clipUrl, manageUrl, text.length);
+    saveToHistory(created.id, clipUrl, text.length);
     toast('Link created');
   } catch (err) {
     toast(err instanceof ApiError ? friendly(err.code) : 'Could not create the link.', 'bad');
@@ -417,76 +409,17 @@ function renderClip(payload, meta) {
   showView('read-view');
 }
 
-/* ---------- manage ---------- */
-
-async function loadManage(id, token) {
-  try {
-    const s = await rpc('clip_status', { p_id: id, p_manage_token: token });
-    if (!s || !s.exists) {
-      el('manage-body').innerHTML = '';
-      el('manage-status').textContent = 'This clip no longer exists \u2014 it was opened the allowed number of times, expired, or was already deleted.';
-      el('manage-delete').classList.add('hidden');
-      showView('manage-view');
-      return;
-    }
-    el('manage-status').textContent = s.expired
-      ? 'Expired on ' + new Date(s.expires_at).toLocaleString() + '.'
-      : 'Live. Opened ' + s.views + ' time(s)' + (s.max_views ? ' of ' + s.max_views : '') + '.';
-    el('manage-created').textContent = 'Created ' + new Date(s.created_at).toLocaleString();
-    el('manage-expires').textContent = s.expires_at ? 'Expires ' + new Date(s.expires_at).toLocaleString() : 'No expiry';
-    el('manage-delete').classList.remove('hidden');
-    el('manage-delete').dataset.id = id;
-    el('manage-delete').dataset.token = token;
-    showView('manage-view');
-  } catch (err) {
-    showError(err instanceof ApiError ? err.code : 'network');
-  }
-}
-
-async function deleteManaged() {
-  const btn = el('manage-delete');
-  const id = btn.dataset.id;
-  const token = btn.dataset.token;
-  if (!id || !token) return;
-  btn.disabled = true;
-  btn.textContent = 'Deleting\u2026';
-  try {
-    const ok = await rpc('delete_clip', { p_id: id, p_manage_token: token });
-    if (ok) {
-      el('manage-status').textContent = 'Deleted. Anyone holding the link will now get nothing.';
-      btn.classList.add('hidden');
-      removeFromHistory(id);
-      toast('Clip deleted');
-    } else {
-      el('manage-status').textContent = 'This clip was already gone.';
-      btn.classList.add('hidden');
-    }
-  } catch (err) {
-    toast(err instanceof ApiError ? friendly(err.code) : 'Could not delete the clip.', 'bad');
-    btn.disabled = false;
-    btn.textContent = 'Delete this clip';
-  }
-}
-
 /* ---------- history ---------- */
 
 function readHistory() {
   try { return JSON.parse(localStorage.getItem('clipHistory') || '[]'); } catch (e) { return []; }
 }
 
-function saveToHistory(id, url, manageUrl, len) {
+function saveToHistory(id, url, len) {
   try {
     const hist = readHistory();
-    hist.unshift({ id: id, url: url, manage: manageUrl, len: len, date: new Date().toLocaleString() });
+    hist.unshift({ id: id, url: url, len: len, date: new Date().toLocaleString() });
     localStorage.setItem('clipHistory', JSON.stringify(hist.slice(0, 10)));
-  } catch (e) {}
-}
-
-function removeFromHistory(id) {
-  try {
-    const hist = readHistory().filter(function (h) { return h.id !== id; });
-    localStorage.setItem('clipHistory', JSON.stringify(hist));
-    renderHistory();
   } catch (e) {}
 }
 
@@ -533,14 +466,7 @@ function renderHistory() {
     openBtn.textContent = 'Open';
     openBtn.addEventListener('click', function () { window.location.href = item.url; });
 
-    const manageBtn = document.createElement('button');
-    manageBtn.type = 'button';
-    manageBtn.className = 'mini';
-    manageBtn.textContent = 'Manage';
-    manageBtn.addEventListener('click', function () { window.location.href = item.manage; });
-
     actions.appendChild(openBtn);
-    actions.appendChild(manageBtn);
 
     row.appendChild(label);
     row.appendChild(date);
@@ -599,9 +525,7 @@ function bindUI() {
     if (e.key === 'Enter') { e.preventDefault(); attemptUnlock(); }
   });
   on('copy-link-btn', 'click', function () { copyText(el('share-link').innerText, 'Link copied'); });
-  on('copy-manage-btn', 'click', function () { copyText(el('manage-link').innerText, 'Manage link copied'); });
   on('copy-content-btn', 'click', function () { copyText(state.rawText, 'Content copied'); });
-  on('manage-delete', 'click', deleteManaged);
   on('new-clip-btn', 'click', function () { window.location.href = window.location.pathname; });
   on('new-clip-btn-2', 'click', function () { window.location.href = window.location.pathname; });
 
@@ -611,14 +535,6 @@ function bindUI() {
 function route() {
   const params = new URLSearchParams(window.location.search);
   const clip = params.get('c');
-  const manage = params.get('m');
-
-  if (manage && manage.indexOf('.') > 0) {
-    const id = manage.split('.')[0];
-    const token = manage.slice(id.length + 1);
-    loadManage(id, token);
-    return;
-  }
 
   if (clip) {
     state.clipId = clip;
