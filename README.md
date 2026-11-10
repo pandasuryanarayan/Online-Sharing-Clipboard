@@ -5,7 +5,7 @@ Share passwords, API keys and notes as encrypted links that **expire** and **bur
 - **Zero-knowledge by construction.** For links without a password, a fresh 256-bit key is generated per clip and carried in the URL fragment (`#k=…`). Browsers never send fragments to a server, so the key never reaches the database, the logs, or the CDN.
 - **Real expiry and one-time reads.** Not client-side guesses: `read_clip()` runs in the database, increments the view counter atomically, and deletes the row when the last allowed open is used.
 - **Short links.** The payload lives in the database, so a link is an id plus a key, not a 2,000-character blob. QR codes work for any size of note.
-- **A 4-digit PIN as a second way in.** Every key-mode clip also gets a PIN, so you can read the content to someone without sending a link at all. See the caveats below.
+- **A 5-digit PIN on every clip.** Whoever you are sending to can go to the site, type the PIN, and skip the link entirely. Add a password when you want the PIN to be a doorbell rather than a key.
 - **Hardened client.** Sanitised Markdown, SRI-pinned CDN scripts, and a strict Content-Security-Policy.
 
 ## How it works
@@ -28,10 +28,13 @@ Share passwords, API keys and notes as encrypted links that **expire** and **bur
 
 **Opening a clip by PIN**
 
-1. The browser wraps the content key under a key derived from the PIN (PBKDF2-SHA256, 600,000 iterations, random salt) and sends only that wrapped blob. The server never holds the key itself.
-2. `redeem_pin(pin)` verifies the PIN against a keyed HMAC lookup, counts the attempt, and returns the ciphertext plus the wrapped key.
-3. The browser derives the PIN key, unwraps the content key, and decrypts. A wrong PIN fails at the database, before any key material is returned.
-4. The redemption consumes a view exactly like `read_clip`, so a one-time clip dies on the first PIN read too.
+Every clip gets a 5-digit PIN, and it plays one of two roles depending on whether you set a password.
+
+*No password — the PIN is the key.* The browser wraps the content key under a key derived from the PIN (PBKDF2-SHA256, 600,000 iterations, random salt) and sends only that wrapped blob, so the server never holds a usable key. Redeeming the PIN returns the ciphertext and the wrapped key; the browser unwraps and decrypts.
+
+*With a password — the PIN is a doorbell.* No wrapped key is stored at all, and the database refuses to accept one. Redeeming the PIN returns the ciphertext and the salt, then the page asks for the password, which is the only thing that can derive the key. A guessed PIN therefore yields ciphertext nobody can read.
+
+In both cases the redemption consumes a view exactly like `read_clip`, so a one-time clip dies on the first PIN read too.
 
 ## Database
 
@@ -41,7 +44,7 @@ One table and three public functions. `clips` has row level security **forced on
 | --- | --- |
 | `create_clip(...)` | Validates the payload, enforces a per-IP rate limit of 30 clips/hour, prunes expired rows, inserts the ciphertext |
 | `read_clip(id)` | Atomically consumes a view, enforces expiry, deletes the row on the last open |
-| `redeem_pin(pin)` | Verifies a PIN, rate-limits the attempt, consumes a view, returns the wrapped key |
+| `redeem_pin(pin)` | Verifies a PIN, rate-limits the attempt, consumes a view, returns the ciphertext and (in key mode) the wrapped key |
 
 There is deliberately no owner-side API: once a clip is created, nobody — not even the sender — can read it back or delete it early. It disappears on its own when it expires or when its opens run out.
 
@@ -56,18 +59,23 @@ There is deliberately no owner-side API: once a clip is created, nobody — not 
 - Direct database access with the publishable key: RLS is forced on, restrictive deny-all policies apply to `anon` and `authenticated`, and neither role holds a table privilege. Confirmed by attempting a `SELECT` as `anon`, which returns permission denied.
 - Abuse of the API key: it grants nothing beyond calling the three functions, which are rate-limited and validate every input.
 
-### The 4-digit PIN, honestly
+### The 5-digit PIN, honestly
 
-A PIN has 10,000 possible values, so the PIN is not the security — the surrounding rules are:
+A PIN has 100,000 possible values. On its own that is still not much, so what protects it depends entirely on which mode you chose:
 
-- The PIN is generated with `crypto.getRandomValues` and rejection sampling, so all 10,000 values are equally likely.
+- **With a password**, the PIN is not a credential at all. It finds the row; the password does the work. Guessing PINs gets an attacker nothing but a password prompt.
+- **Without a password**, the PIN is the credential, and the rules below are what stands between a guess and your text.
+
+The rules that apply either way:
+
+- The PIN is generated with `crypto.getRandomValues` and rejection sampling, so all 100,000 values are equally likely.
 - No two live clips may share a PIN, so a hit is never ambiguous.
-- 10 attempts per client per hour, plus a project-wide ceiling of 300 per hour, which bounds a distributed guessing run even across many addresses.
+- 10 attempts per client per hour, plus a project-wide ceiling of 300 per hour. Walking 100,000 values at that ceiling takes about two weeks of continuous guessing, by which time any sane expiry has passed.
 - A malformed PIN costs the same as a wrong one, and every failure looks identical, so nothing can be enumerated from error messages.
-- The PIN is stored as a keyed HMAC, not a bare hash: without the server's pepper, a stolen row cannot be reversed by trying 10,000 values.
-- The content key is wrapped under the PIN, so the database never holds a usable key.
+- The PIN is stored as a keyed HMAC, not a bare hash: without the server's pepper, a stolen row cannot be reversed by trying 100,000 values.
+- The content key is wrapped under the PIN in key mode, so the database never holds a usable key there.
 
-What this does **not** do: a PIN is not protection against someone who has a copy of the database, because 10,000 guesses against a wrapped key is a matter of minutes. Treat a PIN as "read it aloud on a call", not as a substitute for a password or for a link you control the channel of. Use a password when the content matters and the channel is not trusted.
+What this does **not** do: a passwordless clip is not protected against someone who has a copy of the database, because 100,000 guesses against a wrapped key is minutes of work on a laptop. If the content matters, set a password — that is exactly what the password is for, and the PIN keeps working as the easy way in.
 
 **Not protected against**
 
@@ -115,7 +123,7 @@ Open `index.html` over a local web server (`python3 -m http.server`) rather than
 ## Roadmap
 
 - Self-host the two remaining CDN libraries, removing the last third-party fetch.
-- Optional password-protected link creation with a generated passphrase.
+- Optional passphrase-protected link creation with a generated passphrase.
 
 ## License
 
