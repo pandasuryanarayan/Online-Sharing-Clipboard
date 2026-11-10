@@ -140,9 +140,20 @@ select 'the retirement log is not reachable from the API',
 
 union all
 
--- Functions get EXECUTE for PUBLIC by default, so a function created without an
--- explicit REVOKE is callable by every role in the database. That is exactly how
--- create_clip() once drifted, and nothing else here would have noticed.
+select 'the client address used for rate limits cannot be forged',
+       exists (
+           select 1 from pg_proc p join pg_namespace n on n.oid = p.pronamespace
+            where n.nspname = 'public' and p.proname = 'secure_ip_hash'
+              and p.prosrc ilike '%cf-connecting-ip%'
+       ),
+       case when exists (select 1 from pg_proc p join pg_namespace n on n.oid = p.pronamespace
+                          where n.nspname = 'public' and p.proname = 'secure_ip_hash'
+                            and p.prosrc ilike '%cf-connecting-ip%')
+            then 'cf-connecting-ip preferred, last x-forwarded-for hop otherwise'
+            else 'MISSING — per-IP limits may be spoofable' end
+
+union all
+
 select 'no function is executable by PUBLIC',
        not exists (
            select 1 from pg_proc p join pg_namespace n on n.oid = p.pronamespace
