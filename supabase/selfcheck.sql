@@ -154,6 +154,9 @@ select 'the client address used for rate limits cannot be forged',
 
 union all
 
+-- Functions get EXECUTE for PUBLIC by default, so a function created without an
+-- explicit REVOKE is callable by every role in the database. That is exactly how
+-- create_clip() once drifted, and nothing else here would have noticed.
 select 'no function is executable by PUBLIC',
        not exists (
            select 1 from pg_proc p join pg_namespace n on n.oid = p.pronamespace
