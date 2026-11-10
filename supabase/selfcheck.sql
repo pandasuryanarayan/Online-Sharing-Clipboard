@@ -120,4 +120,22 @@ select 'anon cannot touch the private schema',
        not has_schema_privilege('anon', 'private', 'USAGE'),
        'private usage: ' || has_schema_privilege('anon', 'private', 'USAGE')::text
 
+union all
+
+select 'deleted PINs are retired so they cannot be reissued',
+       exists (select 1 from pg_trigger t join pg_class c on c.oid = t.tgrelid
+                where t.tgname = 'clips_retire_pin'
+                  and c.oid = 'public.clips'::regclass
+                  and not t.tgisinternal),
+       case when exists (select 1 from pg_trigger where tgname = 'clips_retire_pin')
+            then 'clips_retire_pin present' else 'MISSING — a PIN can be recycled' end
+
+union all
+
+select 'the retirement log is not reachable from the API',
+       not has_table_privilege('anon', 'private.pin_history', 'SELECT')
+       and not has_table_privilege('authenticated', 'private.pin_history', 'SELECT'),
+       'anon select: ' || has_table_privilege('anon', 'private.pin_history', 'SELECT')::text
+       || ', authenticated select: ' || has_table_privilege('authenticated', 'private.pin_history', 'SELECT')::text
+
 order by check_name;
