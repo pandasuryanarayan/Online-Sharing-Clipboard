@@ -1,1 +1,88 @@
-IyBTZWN1cmVTaGFyZSBQcm8gfCBFbmNyeXB0ZWQgQ2xpcCBTaGFyaW5nCgpTaGFyZSBwYXNzd29yZHMsIEFQSSBrZXlzIGFuZCBub3RlcyBhcyBlbmNyeXB0ZWQgbGlua3MgdGhhdCAqKmV4cGlyZSoqLCAqKmJ1cm4gYWZ0ZXIgcmVhZGluZyoqLCBhbmQgY2FuIGJlICoqcmV2b2tlZCoqLiBUaGUgdGV4dCBpcyBlbmNyeXB0ZWQgaW4geW91ciBicm93c2VyIHdpdGggQUVTLTI1Ni1HQ007IHRoZSBzZXJ2ZXIgc3RvcmVzIGNpcGhlcnRleHQgaXQgY2Fubm90IHJlYWQgYW5kIGVuZm9yY2VzIHRoZSBsaWZlY3ljbGUgcnVsZXMgaW4gUG9zdGdyZXMuCgotICoqWmVyby1rbm93bGVkZ2UgYnkgY29uc3RydWN0aW9uLioqIEZvciBsaW5rcyB3aXRob3V0IGEgcGFzc3dvcmQsIGEgZnJlc2ggMjU2LWJpdCBrZXkgaXMgZ2VuZXJhdGVkIHBlciBjbGlwIGFuZCBjYXJyaWVkIGluIHRoZSBVUkwgZnJhZ21lbnQgKGAjaz3igKZgKS4gQnJvd3NlcnMgbmV2ZXIgc2VuZCBmcmFnbWVudHMgdG8gYSBzZXJ2ZXIsIHNvIHRoZSBrZXkgbmV2ZXIgcmVhY2hlcyB0aGUgZGF0YWJhc2UsIHRoZSBsb2dzLCBvciB0aGUgQ0ROLgotICoqUmVhbCBleHBpcnkgYW5kIG9uZS10aW1lIHJlYWRzLioqIE5vdCBjbGllbnQtc2lkZSBndWVzc2VzOiBgcmVhZF9jbGlwKClgIHJ1bnMgaW4gdGhlIGRhdGFiYXNlLCBpbmNyZW1lbnRzIHRoZSB2aWV3IGNvdW50ZXIgYXRvbWljYWxseSwgYW5kIGRlbGV0ZXMgdGhlIHJvdyB3aGVuIHRoZSBsYXN0IGFsbG93ZWQgb3BlbiBpcyB1c2VkLgotICoqUmV2b2NhdGlvbi4qKiBFdmVyeSBjbGlwIGNvbWVzIHdpdGggYSBwcml2YXRlIG1hbmFnZSBsaW5rIHRoYXQgY2FuIGluc3BlY3QgaG93IG1hbnkgdGltZXMgaXQgd2FzIG9wZW5lZCBhbmQgZGVsZXRlIGl0IGltbWVkaWF0ZWx5LgotICoqU2hvcnQgbGlua3MuKiogVGhlIHBheWxvYWQgbGl2ZXMgaW4gdGhlIGRhdGFiYXNlLCBzbyBhIGxpbmsgaXMgYW4gaWQgcGx1cyBhIGtleSwgbm90IGEgMiwwMDAtY2hhcmFjdGVyIGJsb2IuIFFSIGNvZGVzIHdvcmsgZm9yIGFueSBzaXplIG9mIG5vdGUuCi0gKipIYXJkZW5lZCBjbGllbnQuKiogU2FuaXRpc2VkIE1hcmtkb3duLCBTUkktcGlubmVkIENETiBzY3JpcHRzLCBhbmQgYSBzdHJpY3QgQ29udGVudC1TZWN1cml0eS1Qb2xpY3kuCgojIyBIb3cgaXQgd29ya3MKCioqQ3JlYXRpbmcgYSBjbGlwKioKCjEuIFRoZSB0ZXh0IGlzIHBhY2tlZCBpbnRvIGB7diwgdH1gIGFuZCBlbmNyeXB0ZWQgd2l0aCBBRVMtMjU2LUdDTSB1c2luZyBhIHJhbmRvbSAxMi1ieXRlIElWLgogICAtICpObyBwYXNzd29yZDoqIGEgcmFuZG9tIDMyLWJ5dGUga2V5IGlzIGdlbmVyYXRlZDsgaXQgZ29lcyBpbnRvIHRoZSBsaW5rIGZyYWdtZW50IGFuZCBub3doZXJlIGVsc2UuCiAgIC0gKlBhc3N3b3JkOiogdGhlIGtleSBpcyBkZXJpdmVkIHdpdGggUEJLREYyLVNIQTI1NiAoNjAwLDAwMCBpdGVyYXRpb25zLCByYW5kb20gMTYtYnl0ZSBzYWx0KSwgYW5kIHRoZSBzYWx0IGlzIHN0b3JlZCBhbG9uZ3NpZGUgdGhlIGNpcGhlcnRleHQuCjIuIFRoZSBicm93c2VyIGNhbGxzIGBjcmVhdGVfY2xpcChjaXBoZXJ0ZXh0LCBpdiwgc2FsdCwgbW9kZSwgZXhwaXJlc19hdCwgbWF4X3ZpZXdzLCBtYW5hZ2VfdG9rZW4pYC4gT25seSB0aGUgU0hBLTI1NiBvZiB0aGUgbWFuYWdlIHRva2VuIGlzIHN0b3JlZC4KMy4gVGhlIHJlc3BvbnNlIGdpdmVzIHRoZSBjbGlwIGlkLiBUaGUgc2hhcmUgbGluayBpcyBgP2M9PGlkPiNrPTxrZXk+YCAob3IgYD9jPTxpZD5gIGluIHBhc3N3b3JkIG1vZGUpOyB0aGUgbWFuYWdlIGxpbmsgaXMgYD9tPTxpZD4uPHRva2VuPmAuCgoqKlJlYWRpbmcgYSBjbGlwKioKCjEuIFRoZSBwYWdlIHNob3dzIGFuIGV4cGxpY2l0ICoqT3BlbiBjbGlwKiogYnV0dG9uLiBOb3RoaW5nIGlzIGZldGNoZWQgdW50aWwgeW91IGNsaWNrLCBzbyBsaW5rLXByZXZpZXcgYm90cyBhbmQgYWNjaWRlbnRhbCByZWZyZXNoZXMgY2Fubm90IGJ1cm4gYSBvbmUtdGltZSBjbGlwLgoyLiBgcmVhZF9jbGlwKGlkKWAgY2hlY2tzIGV4cGlyeSBhbmQgdGhlIHZpZXcgbGltaXQsIGluY3JlbWVudHMgdGhlIGNvdW50ZXIsIHJldHVybnMgdGhlIGNpcGhlcnRleHQsIGFuZCBkZWxldGVzIHRoZSByb3cgaWYgdGhpcyB3YXMgdGhlIGxhc3QgYWxsb3dlZCBvcGVuLgozLiBUaGUgY2lwaGVydGV4dCBpcyBoZWxkIGluIG1lbW9yeSBmb3IgdGhhdCB0YWIsIHNvIGEgbWlzdHlwZWQgcGFzc3dvcmQgY2FuIGJlIHJldHJpZWQgd2l0aG91dCBzcGVuZGluZyBhbm90aGVyIHZpZXcuCjQuIEFFUy1HQ00gdmVyaWZpZXMgdGhlIGF1dGhlbnRpY2F0aW9uIHRhZyB3aGlsZSBkZWNyeXB0aW5nOiBhIHRydW5jYXRlZCBvciB0YW1wZXJlZCBwYXlsb2FkIGZhaWxzIGxvdWRseS4KNS4gTWFya2Rvd24gaXMgcmVuZGVyZWQgdGhyb3VnaCBhIHdoaXRlbGlzdCBzYW5pdGlzZXIsIHRoZW4gdGhlIGtleSBpcyBzdHJpcHBlZCBmcm9tIHRoZSBhZGRyZXNzIGJhci4KCiMjIERhdGFiYXNlCgpPbmUgdGFibGUgYW5kIGZvdXIgZnVuY3Rpb25zLiBgY2xpcHNgIGhhcyBSTFzIGVuYWJsZWQgd2l0aCAqKm5vIHBvbGljaWVzKiosIHNvIHRoZSBwdWJsaXNoYWJsZSBrZXkgY2Fubm90IHJlYWQgb3Igd3JpdGUgaXQgZGlyZWN0bHk7IGFsbCBhY2Nlc3MgaXMgdGhyb3VnaCBgU0VDVVJJVFkgREVGSU5FUmAgZnVuY3Rpb25zLgoKfCBGdW5jdGlvbiB8IFB1cnBvc2UgfAp8IC0tLSB8IC0tLSB8CnwgYGNyZWF0ZV9jbGlwKC4uLilgIHwgVmFsaWRhdGVzIHRoZSBwYXlsb2FkLCBlbmZvcmNlcyBhIHBlci1JUCByYXRlIGxpbWl0IG9mIDMwIGNsaXBzL2hvdXIsIHBydW5lcyBleHBpcmVkIHJvd3MsIGluc2VydHMgdGhlIGNpcGhlcnRleHQgfAp8IGByZWFkX2NsaXAoaWQpYCB8IEF0b21pY2FsbHkgY29uc3VtZXMgYSB2aWV3LCBlbmZvcmNlcyBleHBpcnksIGRlbGV0ZXMgdGhlIHJvdyBvbiB0aGUgbGFzdCBvcGVuIHwKfCBgY2xpcF9zdGF0dXMoaWQsIHRva2VuKWAgfCBPd25lci1vbmx5OiB2aWV3IGNvdW50LCB0aW1lc3RhbXBzLCBleHBpcnkgc3RhdGUgfAp8IGBkZWxldGVfY2xpcChpZCwgdG9rZW4pYCB8IE93bmVyLW9ubHk6IGltbWVkaWF0ZSByZXZvY2F0aW9uIHwKCmBtYW5hZ2VfdG9rZW5gIGlzIHN0b3JlZCBvbmx5IGFzIGEgU0hBLTI1NiBoYXNoLCBzbyBhIGRhdGFiYXNlIGxlYWsgZG9lcyBub3QgaGFuZCBvdmVyIHRoZSBhYmlsaXR5IHRvIGRlbGV0ZSBjbGlwcy4KCiMjIFNlY3VyaXR5IG1vZGVsCgoqKlByb3RlY3RlZCBhZ2FpbnN0KioKCi0gQW55b25lIHdobyBzZWVzIHRoZSBjaXBoZXJ0ZXh0IHdpdGhvdXQgdGhlIGxpbmsg4oCUIHNlcnZlciBsb2dzLCBiYWNrdXBzLCBhIHByb3h5LCBhIGBSZWZlcmVyYCBoZWFkZXIsIHRoZSBkYXRhYmFzZSBpdHNlbGYuIEluIGtleSBtb2RlIHRoZSBrZXkgaXMgbmV2ZXIgaW4gYW55IG9mIHRoZW0uCi0gUmVwbGF5aW5nIGFuIGV4cGlyZWQgb3IgZXhoYXVzdGVkIGxpbms6IHRoZSBzZXJ2ZXIgcmVmdXNlcyBpdC4KLSBBIGNsaXAgaW5qZWN0aW5nIEhUTUwsIGBvbmVycm9yYCBoYW5kbGVycyBvciBgamF2YXNjcmlwdDpgIFVSTHMgaW50byB0aGUgcmVhZGVyJ3MgcGFnZSDigJQgdGhhdCBvdXRwdXQgaXMgc3RyaXBwZWQuCi0gQSBjb21wcm9taXNlZCBDRE4gc2lsZW50bHkgc3dhcHBpbmcgYSBsaWJyYXJ5OiBib3RoIENETiBzY3JpcHRzIGFyZSBwaW5uZWQgd2l0aCBTdWJyZXNvdXJjZSBJbnRlZ3JpdHksIGFuZCB0aGUgQ1NQIGJsb2NrcyBldmVyeSBvdGhlciBvcmlnaW4uIGBjb25uZWN0LXNyY2AgYWxsb3dzIG9ubHkgdGhpcyBwcm9qZWN0J3MgQVBJLgotIEEgbGVha2VkIHB1Ymxpc2hhYmxlIGtleTogaXQgZ3JhbnRzIG5vdGhpbmcgYmV5b25kIGNhbGxpbmcgdGhlIGZvdXIgZnVuY3Rpb25zLCB3aGljaCBhcmUgcmF0ZS1saW1pdGVkIGFuZCB0b2tlbi1nYXRlZC4KCioqTm90IHByb3RlY3RlZCBhZ2FpbnN0KioKCi0gKipXaG9ldmVyIGhvbGRzIHRoZSBjb21wbGV0ZSBsaW5rLioqIEluIGtleSBtb2RlIHRoZSBrZXkgaXMgaW4gdGhlIGxpbms7IGluIHBhc3N3b3JkIG1vZGUgaXQgaXMgd2hhdGV2ZXIgeW91IHRlbGwgdGhlIHJlY2lwaWVudC4KLSAqKlRoZSByZWNpcGllbnQuKiogVGhleSBjYW4gc2NyZWVuc2hvdCwgY29weSBvciByZS1zaGFyZSBvbmNlIHRoZXkgaGF2ZSByZWFkIGl0LiBCdXJuLWFmdGVyLXJlYWRpbmcgbGltaXRzIGRpc3RyaWJ1dGlvbiwgaXQgZG9lcyBub3QgcHJldmVudCBpdC4KLSAqKk1ldGFkYXRhLioqIFRoZSBzZXJ2ZXIgc2VlcyBhIGNsaXAgZXhpc3RzLCBpdHMgc2l6ZSwgaXRzIHRpbWVzdGFtcHMgYW5kIGEgaGFzaCBvZiB0aGUgY3JlYXRvcidzIElQLiBJdCBkb2VzIG5vdCBzZWUgdGhlIGNvbnRlbnQuCi0gKipUcmFmZmljIGFuYWx5c2lzKiogYnkgeW91ciBuZXR3b3JrIG9yIHRoZSBBUEkgaG9zdC4KLSAqKkEgbWFsaWNpb3VzIHNlcnZlciBvcGVyYXRvci4qKiBUaGUgSlMgdGhhdCBlbmNyeXB0cyBpcyBzZXJ2ZWQgYnkgdGhlIHNhbWUgb3JpZ2luLCBzbyBhIGNvbXByb21pc2VkIGRlcGxveW1lbnQgY291bGQgc2VydmUgbW9kaWZpZWQgY29kZS4gVmVyaWZ5aW5nIHRoZSBzb3VyY2UgaXMgdGhlIG9ubHkgZGVmZW5jZS4KCiMjIERlcGxveWluZwoKU3RhdGljIGhvc3RpbmcgcGx1cyB0aGlzIFN1cGFiYXNlIHByb2plY3QuCgpgYGAKaW5kZXguaHRtbCAgIG1hcmt1cCBhbmQgQ1NQCnN0eWxlcy5jc3MgICBzdHlsZXMKYXBwLmpzICAgICAgIGNyeXB0bywgQVBJIGNhbGxzLCBVSQpgYGAKCjEuIEhvc3QgdGhlIHRocmVlIGZpbGVzIGFueXdoZXJlIHN0YXRpYyAoR2l0SHViIFBhZ2VzLCBOZXRsaWZ5LCBWZXJjZWwsIENsb3VkZmxhcmUgUGFnZXMpLiBTZXJ2ZSBgaW5kZXguaHRtbGAgYXQgdGhlIHJvb3QuCjIuIEluIGBhcHAuanNgLCBzZXQgYEFQSV9VUkxgIGFuZCBgQVBJX0tFWWAgZm9yIHlvdXIgcHJvamVjdC4KMy4gQWRkIHlvdXIgc2l0ZSdzIG9yaWdpbiB0byB0aGUgcHJvamVjdCdzIGFsbG93ZWQgQ09SUyBvcmlnaW5zIGlmIHlvdSB0aWdodGVuIHRoZSBkZWZhdWx0cy4KCmBBUElfS0VZYCBpcyB0aGUgKipwdWJsaXNoYWJsZSoqIGtleSAoYHNiX3B1Ymxpc2hhYmxlX+KApmApLiBJdCBpcyBkZXNpZ25lZCB0byBiZSBwdWJsaWMgYW5kIGlzIHByb3RlY3RlZCBieSBSTFMgcGx1cyB0aGUgZnVuY3Rpb24tbGV2ZWwgY2hlY2tzIGFib3ZlLiBUaGUgYHNlcnZpY2Vfcm9sZWAsIGtleSBhbmQgdGhlIGRhdGFiYXNlIHBhc3N3b3JkIG11c3QgbmV2ZXIgYmUgY29tbWl0dGVkIHRvIHRoaXMgcmVwb3NpdG9yeSDigJQgbm90aGluZyBoZXJlIG5lZWRzIHRoZW0uCgojIyBMb2NhbCBkZXZlbG9wbWVudAoKT3BlbiBgaW5kZXguaHRtbGAgb3ZlciBhIGxvY2FsIHdlYiBzZXJ2ZXIgKGBweXRob24zIC1tIGh0dHAuc2VydmVyYCkgcmF0aGVyIHRoYW4gYGZpbGU6Ly9gLCBzbyB0aGUgQ1NQIGFuZCB0aGUgQVBJIG9yaWdpbiBiZWhhdmUgYXMgdGhleSBkbyBpbiBwcm9kdWN0aW9uLgoKIyMgUm9hZG1hcAoKLSBTZWxmLWhvc3QgdGhlIHR3byByZW1haW5pbmcgQ0ROIGxpYnJhcmllcywgcmVtb3ZpbmcgdGhlIGxhc3QgdGhpcmQtcGFydHkgZmV0Y2guCi0gT3B0aW9uYWwgcGFzc3BocmFzZS1wcm90ZWN0ZWQgbWFuYWdlIGxpbmtzLgotIFBlci1jbGlwIGFjY2VzcyBsb2cgKElQIGhhc2hlcyBvbmx5KSBmb3IgdGhlIG93bmVyLgoKIyMgTGljZW5zZQoKR05VIEdlbmVyYWwgUHVibGljIExpY2Vuc2UgdjMuMCDigJQgc2VlIFtMSUNFTlNFXShMSUNFTlNFKS4K
+# SecureShare Pro | Encrypted Clip Sharing
+
+Share passwords, API keys and notes as encrypted links that **expire**, **burn after reading**, and can be **revoked**. The text is encrypted in your browser with AES-256-GCM; the server stores ciphertext it cannot read and enforces the lifecycle rules in Postgres.
+
+- **Zero-knowledge by construction.** For links without a password, a fresh 256-bit key is generated per clip and carried in the URL fragment (`#k=…`). Browsers never send fragments to a server, so the key never reaches the database, the logs, or the CDN.
+- **Real expiry and one-time reads.** Not client-side guesses: `read_clip()` runs in the database, increments the view counter atomically, and deletes the row when the last allowed open is used.
+- **Revocation.** Every clip comes with a private manage link that can inspect how many times it was opened and delete it immediately.
+- **Short links.** The payload lives in the database, so a link is an id plus a key, not a 2,000-character blob. QR codes work for any size of note.
+- **Hardened client.** Sanitised Markdown, SRI-pinned CDN scripts, and a strict Content-Security-Policy.
+
+## How it works
+
+**Creating a clip**
+
+1. The text is packed into `{v, t}` and encrypted with AES-256-GCM using a random 12-byte IV.
+   - *No password:* a random 32-byte key is generated; it goes into the link fragment and nowhere else.
+   - *Password:* the key is derived with PBKDF2-SHA256 (600,000 iterations, random 16-byte salt), and the salt is stored alongside the ciphertext.
+2. The browser calls `create_clip(ciphertext, iv, salt, mode, expires_at, max_views, manage_token)`. Only the SHA-256 of the manage token is stored.
+3. The response gives the clip id. The share link is `?c=<id>#k=<key>` (or `?c=<id>` in password mode); the manage link is `?m=<id>.<token>`.
+
+**Reading a clip**
+
+1. The page shows an explicit **Open clip** button. Nothing is fetched until you click, so link-preview bots and accidental refreshes cannot burn a one-time clip.
+2. `read_clip(id)` checks expiry and the view limit, increments the counter, returns the ciphertext, and deletes the row if this was the last allowed open.
+3. The ciphertext is held in memory for that tab, so a mistyped password can be retried without spending another view.
+4. AES-GCM verifies the authentication tag while decrypting: a truncated or tampered payload fails loudly.
+5. Markdown is rendered through a whitelist sanitiser, then the key is stripped from the address bar.
+
+## Database
+
+One table and four functions. `clips` has RLS enabled with **no policies**, so the publishable key cannot read or write it directly; all access is through `SECURITY DEFINER` functions.
+
+| Function | Purpose |
+| --- | --- |
+| `create_clip(...)` | Validates the payload, enforces a per-IP rate limit of 30 clips/hour, prunes expired rows, inserts the ciphertext |
+| `read_clip(id)` | Atomically consumes a view, enforces expiry, deletes the row on the last open |
+| `clip_status(id, token)` | Owner-only: view count, timestamps, expiry state |
+| `delete_clip(id, token)` | Owner-only: immediate revocation |
+
+`manage_token` is stored only as a SHA-256 hash, so a database leak does not hand over the ability to delete clips.
+
+## Security model
+
+**Protected against**
+
+- Anyone who sees the ciphertext without the link — server logs, backups, a proxy, a `Referer` header, the database itself. In key mode the key is never in any of them.
+- Replaying an expired or exhausted link: the server refuses it.
+- A clip injecting HTML, `onerror` handlers or `javascript:` URLs into the reader's page — that output is stripped.
+- A compromised CDN silently swapping a library: both CDN scripts are pinned with Subresource Integrity, and the CSP blocks every other origin. `connect-src` allows only this project's API.
+- A leaked publishable key: it grants nothing beyond calling the four functions, which are rate-limited and token-gated.
+
+**Not protected against**
+
+- **Whoever holds the complete link.** In key mode the key is in the link; in password mode it is whatever you tell the recipient.
+- **The recipient.** They can screenshot, copy or re-share once they have read it. Burn-after-reading limits distribution, it does not prevent it.
+- **Metadata.** The server sees a clip exists, its size, its timestamps and a hash of the creator's IP. It does not see the content.
+- **Traffic analysis** by your network or the API host.
+- **A malicious server operator.** The JS that encrypts is served by the same origin, so a compromised deployment could serve modified code. Verifying the source is the only defence.
+
+## Deploying
+
+Static hosting plus this Supabase project.
+
+```
+index.html   markup and CSP
+styles.css   styles
+app.js       crypto, API calls, UI
+```
+
+1. Host the three files anywhere static (GitHub Pages, Netlify, Vercel, Cloudflare Pages). Serve `index.html` at the root.
+2. In `app.js`, set `API_URL` and `API_KEY` for your project.
+3. Add your site's origin to the project's allowed CORS origins if you tighten the defaults.
+
+`API_KEY` is the **publishable** key (`sb_publishable_…`). It is designed to be public and is protected by RLS plus the function-level checks above. The `service_role` key and the database password must never be committed to this repository — nothing here needs them.
+
+## Local development
+
+Open `index.html` over a local web server (`python3 -m http.server`) rather than `file://`, so the CSP and the API origin behave as they do in production.
+
+## Roadmap
+
+- Self-host the two remaining CDN libraries, removing the last third-party fetch.
+- Optional passphrase-protected manage links.
+- Per-clip access log (IP hashes only) for the owner.
+
+## License
+
+GNU General Public License v3.0 — see [LICENSE](LICENSE).
