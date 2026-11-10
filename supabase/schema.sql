@@ -496,6 +496,17 @@ grant execute on function public.create_clip(text, text, text, text, timestamptz
 grant execute on function public.read_clip(uuid) to anon, authenticated, service_role;
 grant execute on function public.redeem_pin(text) to anon, authenticated, service_role;
 
+-- Supabase grants every new table, function and sequence in `public` to anon and
+-- authenticated by default. That is the opposite of this project's model, so the
+-- default is inverted: anything created later starts closed and must be granted
+-- deliberately. Existing objects are unaffected.
+alter default privileges for role postgres in schema public
+    revoke all on tables from anon, authenticated;
+alter default privileges for role postgres in schema public
+    revoke all on sequences from anon, authenticated;
+alter default privileges for role postgres in schema public
+    revoke all on functions from anon, authenticated;
+
 -- ---------------------------------------------------------------------------
 -- 9. Documentation that shows up in the dashboard
 -- ---------------------------------------------------------------------------
