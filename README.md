@@ -57,9 +57,13 @@ Guardrails the database enforces on its own:
 - **A PIN is never reissued.** When a clip dies — burned, expired, or deleted — its PIN is retired for 30 days, so a code you were given can never later open somebody else's clip.
 - **Both API roles are resource-limited.** `anon` and `authenticated` carry a 3-second statement timeout and a 10-second idle-in-transaction timeout, so neither a hostile query nor a client squatting on a transaction can tie up the database.
 
+### Rebuilding the database
+
+`supabase/schema.sql` is the entire database in one file — the table, its constraints and indexes, the forced RLS and restrictive policies, all six functions, the retirement trigger, the Vault secret, the role timeouts and the cron job. It was reconstructed from the live catalogue rather than written from memory, and every function body in it was hash-checked against the running database, so it cannot quietly drift from what is deployed. Run it top to bottom against a fresh project to rebuild, then run the self-check below.
+
 ### Security self-check
 
-`supabase/selfcheck.sql` asserts the invariants this design leans on, in one query, twelve of them: that `anon` and `authenticated` can each execute exactly `create_clip`, `read_clip` and `redeem_pin` and reach no table at all; that RLS is forced on `clips` with two restrictive deny-all policies; that the PIN-wrap constraint is present; that the PIN pepper lives only in Vault; that the purge job is active; that the private schema is out of reach; and that deleted PINs are retired and the retirement log is not exposed. Run it after any schema change — every row must read `passed = true`.
+`supabase/selfcheck.sql` asserts the invariants this design leans on, in one query, thirteen of them: that `anon` and `authenticated` can each execute exactly `create_clip`, `read_clip` and `redeem_pin` and reach no table at all; that no function is executable by `PUBLIC`; that RLS is forced on `clips` with two restrictive deny-all policies; that the PIN-wrap constraint is present; that the PIN pepper lives only in Vault; that the purge job is active; that the private schema is out of reach; and that deleted PINs are retired and the retirement log is not exposed. Run it after any schema change — every row must read `passed = true`.
 
 It is deliberately a query rather than a stored function: a check whose job is to prove the attack surface has not grown should not itself add to it. It has been tested the honest way — granting `anon` SELECT on `clips` makes the check fail with the offending table named, and revoking it makes it pass again.
 
@@ -125,9 +129,10 @@ styles.css   styles
 app.js       crypto, API calls, UI
 ```
 
-1. Host the three files anywhere static (GitHub Pages, Netlify, Vercel, Cloudflare Pages). Serve `index.html` at the root.
-2. In `app.js`, set `API_URL` and `API_KEY` for your project.
-3. If you tighten CORS in the project settings, allow your site's origin.
+1. Run `supabase/schema.sql` against a fresh Supabase project to build the database, then `supabase/selfcheck.sql` to confirm it.
+2. Host the three site files anywhere static (GitHub Pages, Netlify, Vercel, Cloudflare Pages). Serve `index.html` at the root.
+3. In `app.js`, set `API_URL` and `API_KEY` for your project.
+4. If you tighten CORS in the project settings, allow your site's origin.
 
 The `service_role` key and the database password must never be committed to this repository — nothing here needs them.
 
