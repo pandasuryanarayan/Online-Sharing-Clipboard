@@ -65,7 +65,7 @@ const FRIENDLY = {
   rate_limited: 'Too many attempts from this connection in the last hour. Try again later.',
   invalid_pin: 'That PIN did not match anything. It may be wrong, expired, or already used.',
   pin_taken: 'That PIN is already in use. Try again.',
-  pin_needs_key_mode: 'PINs are only available for links without a password.',
+  pin_wrap_not_allowed: 'Could not set up the PIN. Please try again.',
   invalid_pin_wrapped: 'Could not set up the PIN. Please try again.',
   invalid_pin_salt: 'Could not set up the PIN. Please try again.',
   clip_not_found: 'This clip is gone. It has been opened the allowed number of times, expired, or was deleted by its sender.',
@@ -123,15 +123,15 @@ async function deriveKey(password, salt) {
 
 /* ---------- pin ---------- */
 
-// Uniform 4-digit code. Rejection sampling avoids the modulo bias that would
+// Uniform 5-digit code. Rejection sampling avoids the modulo bias that would
 // make some PINs slightly likelier than others.
 function randomPin() {
   const buf = new Uint32Array(1);
-  const limit = 65536 - (65536 % 10000);
+  const limit = 131072 - (131072 % 100000);
   for (;;) {
     crypto.getRandomValues(buf);
-    const v = buf[0] % 65536;
-    if (v < limit) return String(v % 10000).padStart(4, '0');
+    const v = buf[0] % 131072;
+    if (v < limit) return String(v % 100000).padStart(5, '0');
   }
 }
 
@@ -312,14 +312,15 @@ async function generateLink() {
     const cipher = await encryptPayload({ v: 2, t: text }, password);
     const expiresAt = expiryMinutes > 0 ? new Date(Date.now() + expiryMinutes * 60000).toISOString() : null;
 
-    // A PIN only makes sense for key-mode clips: password clips have no standalone
-    // key to wrap, and the server refuses the combination.
+    // Every clip gets a PIN. With no password the PIN is also the credential, so
+    // the content key is wrapped under it. With a password the PIN only locates
+    // the clip: no wrapped key is stored, so a guessed PIN yields ciphertext.
     let created = null;
     let pin = null;
     for (let attempt = 0; attempt < 3 && !created; attempt++) {
-      pin = cipher.rawKey ? randomPin() : null;
+      pin = randomPin();
       let wrapped = null;
-      if (pin) {
+      if (cipher.rawKey) {
         const w = await wrapKeyForPin(cipher.rawKey, pin);
         wrapped = w;
       }
@@ -346,19 +347,14 @@ async function generateLink() {
 
     el('share-link').innerText = clipUrl;
 
-    // A PIN is only issued for key-mode clips. Say so out loud rather than
-    // leaving the user hunting for a PIN that was never going to appear.
-    const pinBlock = el('pin-block');
-    const pinNote = el('no-pin-note');
-    if (pinBlock) {
-      if (pin) {
-        el('pin-value').textContent = pin;
-        pinBlock.classList.remove('hidden');
-      } else {
-        pinBlock.classList.add('hidden');
-      }
+    el('pin-value').textContent = pin;
+    const pinNote = el('pin-note');
+    if (pinNote) {
+      pinNote.textContent = cipher.rawKey
+        ? 'Read this out over a call, or send it by another channel. Anyone with the PIN can open this clip without the link, and it dies when the clip does.'
+        : 'This PIN finds the clip. Your password is still required to read it, so the PIN alone reveals nothing.';
     }
-    if (pinNote) pinNote.classList.toggle('hidden', !!pin);
+    el('pin-block').classList.remove('hidden');
     el('result-area').classList.remove('hidden');
     el('result-meta').textContent = describePolicy(views, expiryMinutes);
     renderQr(clipUrl);
@@ -457,7 +453,7 @@ async function attemptUnlock() {
   btn.textContent = 'Unlocking\u2026';
   try {
     const payload = await decryptPayload(state.cipher, password, 'password');
-    renderClip(payload, { views_left: state.viewsLeft, expires_at: null });
+    renderClip(payload, { views_left: state.viewsLeft, expires_at: state.expiresAt || null });
   } catch (e) {
     errBox.textContent = 'Wrong password. The clip is still in this tab \u2014 try again.';
     errBox.classList.remove('hidden');
@@ -494,8 +490,8 @@ async function redeemPin() {
   errBox.classList.add('hidden');
   errBox.textContent = '';
 
-  if (!/^[0-9]{4}$/.test(pin)) {
-    errBox.textContent = 'Enter the 4 digits.';
+  if (!/^[0-9]{4,5}$/.test(pin)) {
+    errBox.textContent = 'Enter the 5-digit PIN.';
     errBox.classList.remove('hidden');
     return;
   }
@@ -512,8 +508,20 @@ async function redeemPin() {
       return;
     }
 
-    // The server verified the PIN and handed back the wrapped key; the key itself
-    // is unwrapped here, in the browser, using the PIN the user typed.
+    // A password clip is only located by its PIN. Keep the ciphertext in memory
+    // and ask for the password, which is what actually unlocks it.
+    if (res.mode === 'p') {
+      state.cipher = { ciphertext: res.ciphertext, iv: res.iv, salt: res.salt, mode: 'p' };
+      state.viewsLeft = res.views_left;
+      state.expiresAt = res.expires_at;
+      el('unlock-note').textContent = 'The PIN found your clip. It also has a password \u2014 enter it to read the contents.';
+      showView('unlock-view');
+      el('unlock-password').focus();
+      return;
+    }
+
+    // No password: the server verified the PIN and handed back the wrapped key,
+    // which is unwrapped here, in the browser, using the PIN the user typed.
     const rawKey = await unwrapKeyFromPin(res.pin_wrapped, res.pin_salt, pin);
     const payload = await decryptPayload(
       { ciphertext: res.ciphertext, iv: res.iv, salt: null, mode: 'k' },
@@ -659,7 +667,7 @@ function bindUI() {
     if (e.key === 'Enter') { e.preventDefault(); redeemPin(); }
   });
   on('pin-input', 'input', function () {
-    el('pin-input').value = el('pin-input').value.replace(/[^0-9]/g, '').slice(0, 4);
+    el('pin-input').value = el('pin-input').value.replace(/[^0-9]/g, '').slice(0, 5);
   });
 
   updateLengthHint();
