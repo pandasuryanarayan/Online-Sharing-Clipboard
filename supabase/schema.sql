@@ -242,7 +242,7 @@ begin
             raise exception 'invalid_pin';
         end if;
 
-        if p_pin ~ '^([0-9])\\1{4}$' then
+        if p_pin ~ '^([0-9])\1{4}$' then
             raise exception 'weak_pin';
         end if;
         v_asc := true;
