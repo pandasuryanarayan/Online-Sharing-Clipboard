@@ -54,10 +54,12 @@ Guardrails the database enforces on its own:
 - **Trivial PINs are refused server-side** (`weak_pin`): five identical digits, any straight run up or down, and a short list of favourites. The client already uses a CSPRNG; this covers a modified client.
 - **Expired clips are purged every 15 minutes** by a `pg_cron` job, not only when someone happens to create a clip.
 - **The PIN pepper lives in Vault**, encrypted at rest with a key that is not in a database dump, so a stolen row cannot be reversed by trying all 100,000 PINs.
+- **A PIN is never reissued.** When a clip dies — burned, expired, or deleted — its PIN is retired for 30 days, so a code you were given can never later open somebody else's clip.
+- **Both API roles are resource-limited.** `anon` and `authenticated` carry a 3-second statement timeout and a 10-second idle-in-transaction timeout, so neither a hostile query nor a client squatting on a transaction can tie up the database.
 
 ### Security self-check
 
-`supabase/selfcheck.sql` asserts the invariants this design leans on, in one query: that `anon` can execute exactly `create_clip`, `read_clip` and `redeem_pin` and reach no table at all; that RLS is forced on `clips` with two restrictive deny-all policies; that the PIN-wrap constraint is present; that the PIN pepper lives only in Vault; that the purge job is active; and that `anon` cannot use the `private` schema. Run it after any schema change — every row must read `passed = true`.
+`supabase/selfcheck.sql` asserts the invariants this design leans on, in one query, twelve of them: that `anon` and `authenticated` can each execute exactly `create_clip`, `read_clip` and `redeem_pin` and reach no table at all; that RLS is forced on `clips` with two restrictive deny-all policies; that the PIN-wrap constraint is present; that the PIN pepper lives only in Vault; that the purge job is active; that the private schema is out of reach; and that deleted PINs are retired and the retirement log is not exposed. Run it after any schema change — every row must read `passed = true`.
 
 It is deliberately a query rather than a stored function: a check whose job is to prove the attack surface has not grown should not itself add to it. It has been tested the honest way — granting `anon` SELECT on `clips` makes the check fail with the offending table named, and revoking it makes it pass again.
 
@@ -82,7 +84,7 @@ A PIN has 100,000 possible values. On its own that is still not much, so what pr
 The rules that apply either way:
 
 - The PIN is generated with `crypto.getRandomValues` and rejection sampling, so all 100,000 values are equally likely.
-- No two live clips may share a PIN, so a hit is never ambiguous.
+- No two live clips may share a PIN, so a hit is never ambiguous — and a PIN whose clip has died is retired for 30 days rather than reissued to someone else.
 - 10 attempts per client per hour, plus a project-wide ceiling of 300 per hour. Walking 100,000 values at that ceiling takes about two weeks of continuous guessing, by which time any sane expiry has passed.
 - A malformed PIN costs the same as a wrong one, and every failure looks identical, so nothing can be enumerated from error messages.
 - The PIN is stored as a keyed HMAC, not a bare hash: without the server's pepper, a stolen row cannot be reversed by trying 100,000 values.
