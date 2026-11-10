@@ -3,316 +3,32 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>SecureShare Pro | Encrypted Clipboard</title>
-
-    <!-- Favicon (inline SVG, no extra file needed) -->
-    <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,%3Csvg%20xmlns%3D%27http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%27%20viewBox%3D%270%200%2064%2064%27%3E%3Cdefs%3E%3ClinearGradient%20id%3D%27g%27%20x1%3D%270%27%20y1%3D%270%27%20x2%3D%271%27%20y2%3D%271%27%3E%3Cstop%20offset%3D%270%27%20stop-color%3D%27%234f46e5%27%2F%3E%3Cstop%20offset%3D%271%27%20stop-color%3D%27%237c3aed%27%2F%3E%3C%2FlinearGradient%3E%3C%2Fdefs%3E%3Crect%20width%3D%2764%27%20height%3D%2764%27%20rx%3D%2716%27%20fill%3D%27url%28%23g%29%27%2F%3E%3Cpath%20d%3D%27M22%2030v-6a10%2010%200%200%201%2020%200v6%27%20fill%3D%27none%27%20stroke%3D%27%23fff%27%20stroke-width%3D%276%27%20stroke-linecap%3D%27round%27%2F%3E%3Crect%20x%3D%2716%27%20y%3D%2729%27%20width%3D%2732%27%20height%3D%2724%27%20rx%3D%276%27%20fill%3D%27%23fff%27%2F%3E%3Ccircle%20cx%3D%2732%27%20cy%3D%2739%27%20r%3D%273.2%27%20fill%3D%27%234f46e5%27%2F%3E%3Crect%20x%3D%2730.5%27%20y%3D%2740%27%20width%3D%273%27%20height%3D%276%27%20rx%3D%271.5%27%20fill%3D%27%234f46e5%27%2F%3E%3C%2Fsvg%3E">
-    <link rel="apple-touch-icon" href="data:image/svg+xml,%3Csvg%20xmlns%3D%27http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%27%20viewBox%3D%270%200%2064%2064%27%3E%3Cdefs%3E%3ClinearGradient%20id%3D%27g%27%20x1%3D%270%27%20y1%3D%270%27%20x2%3D%271%27%20y2%3D%271%27%3E%3Cstop%20offset%3D%270%27%20stop-color%3D%27%234f46e5%27%2F%3E%3Cstop%20offset%3D%271%27%20stop-color%3D%27%237c3aed%27%2F%3E%3C%2FlinearGradient%3E%3C%2Fdefs%3E%3Crect%20width%3D%2764%27%20height%3D%2764%27%20rx%3D%2716%27%20fill%3D%27url%28%23g%29%27%2F%3E%3Cpath%20d%3D%27M22%2030v-6a10%2010%200%200%201%2020%200v6%27%20fill%3D%27none%27%20stroke%3D%27%23fff%27%20stroke-width%3D%276%27%20stroke-linecap%3D%27round%27%2F%3E%3Crect%20x%3D%2716%27%20y%3D%2729%27%20width%3D%2732%27%20height%3D%2724%27%20rx%3D%276%27%20fill%3D%27%23fff%27%2F%3E%3Ccircle%20cx%3D%2732%27%20cy%3D%2739%27%20r%3D%273.2%27%20fill%3D%27%234f46e5%27%2F%3E%3Crect%20x%3D%2730.5%27%20y%3D%2740%27%20width%3D%273%27%20height%3D%276%27%20rx%3D%271.5%27%20fill%3D%27%234f46e5%27%2F%3E%3C%2Fsvg%3E">
+    <title>SecureShare Pro | Encrypted Clip Sharing</title>
+    <meta name="description" content="Share passwords, notes and keys as encrypted links that expire, burn after reading, and can be revoked. Encryption happens in your browser; the server only ever holds ciphertext.">
     <meta name="theme-color" content="#4f46e5">
-    
-    <!-- Everything the page may load is pinned here. Crypto is the browser's own Web Crypto API,
-         so no third-party crypto library is fetched at all. -->
-    <meta http-equiv="Content-Security-Policy" content="default-src 'none'; script-src 'unsafe-inline' https://cdnjs.cloudflare.com; style-src 'unsafe-inline'; img-src 'self' data: blob:; connect-src 'none'; base-uri 'none'; form-action 'none'">
+    <meta property="og:title" content="SecureShare Pro">
+    <meta property="og:description" content="Encrypted links that expire, burn after reading, and can be revoked.">
+    <meta property="og:type" content="website">
+    <meta name="referrer" content="no-referrer">
 
+    <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,%3Csvg%20xmlns%3D%27http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%27%20viewBox%3D%270%200%2064%2064%27%3E%3Cdefs%3E%3ClinearGradient%20id%3D%27g%27%20x1%3D%270%27%20y1%3D%270%27%20x2%3D%271%27%20y2%3D%271%27%3E%3Cstop%20offset%3D%270%27%20stop-color%3D%27%234f46e5%27%2F%3E%3Cstop%20offset%3D%271%27%20stop-color%3D%27%237c3aed%27%2F%3E%3C%2FlinearGradient%3E%3C%2Fdefs%3E%3Crect%20width%3D%2764%27%20height%3D%2764%27%20rx%3D%2716%27%20fill%3D%27url%28%23g%29%27%2F%3E%3Cpath%20d%3D%27M22%2030v-6a10%2010%200%200%201%2020%200v6%27%20fill%3D%27none%27%20stroke%3D%27%23fff%27%20stroke-width%3D%276%27%20stroke-linecap%3D%27round%27%2F%3E%3Crect%20x%3D%2716%27%20y%3D%2729%27%20width%3D%2732%27%20height%3D%2724%27%20rx%3D%276%27%20fill%3D%27%23fff%27%2F%3E%3Ccircle%20cx%3D%2732%27%20cy%3D%2739%27%20r%3D%273.2%27%20fill%3D%27%234f46e5%27%2F%3E%3Crect%20x%3D%2730.5%27%20y%3D%2740%27%20width%3D%273%27%20height%3D%276%27%20rx%3D%271.5%27%20fill%3D%27%234f46e5%27%2F%3E%3C%2Fsvg%3E">
+
+    <meta http-equiv="Content-Security-Policy" content="default-src 'none'; script-src 'self' https://cdnjs.cloudflare.com; style-src 'self'; img-src 'self' data:; connect-src https://drapuwslrdtinaobqrlp.supabase.co; base-uri 'none'; form-action 'none'; frame-ancestors 'none'">
+
+    <link rel="stylesheet" href="styles.css">
     <script src="https://cdnjs.cloudflare.com/ajax/libs/marked/4.3.0/marked.min.js"
             integrity="sha384-QsSpx6a0USazT7nK7w8qXDgpSAPhFsb2XtpoLFQ5+X2yFN6hvCKnwEzN8M5FWaJb"
             crossorigin="anonymous" referrerpolicy="no-referrer"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"
             integrity="sha384-3zSEDfvllQohrq0PHL1fOXJuC/jSOO34H46t6UQfobFOmxE5BpjjaIJY5F2/bMnU"
             crossorigin="anonymous" referrerpolicy="no-referrer"></script>
-
-    <!-- Set the theme before first paint so there is no flash of the wrong palette. -->
-    <script>
-        (function () {
-            try {
-                var saved = localStorage.getItem('theme');
-                if (saved === 'dark' || (!saved && window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches)) {
-                    document.documentElement.setAttribute('data-theme', 'dark');
-                }
-            } catch (e) {}
-        })();
-    </script>
-
-    <style>
-        :root {
-            --primary: #4f46e5;
-            --primary-hover: #4338ca;
-            --bg: #f9fafb;
-            --card: #ffffff;
-            --text: #111827;
-            --text-light: #6b7280;
-            --border: #e5e7eb;
-            --danger: #ef4444;
-            --success: #10b981;
-            --shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1);
-        }
-
-        [data-theme="dark"] {
-            --primary: #6366f1;
-            --primary-hover: #818cf8;
-            --bg: #111827;
-            --card: #1f2937;
-            --text: #f3f4f6;
-            --text-light: #9ca3af;
-            --border: #374151;
-            --shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.5);
-        }
-
-        body {
-            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
-            background-color: var(--bg);
-            color: var(--text);
-            margin: 0;
-            padding: 20px;
-            min-height: 100vh;
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            transition: background-color 0.3s, color 0.3s;
-        }
-
-        /* Header & Nav */
-        .nav-bar {
-            width: 100%;
-            max-width: 700px;
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            margin-bottom: 20px;
-        }
-
-        .logo { font-weight: 800; font-size: 1.2rem; color: var(--primary); display: flex; align-items: center; gap: 5px; }
-        .logo-icon { width: 26px; height: 26px; flex-shrink: 0; display: block; border-radius: 7px; }
-        
-        .nav-actions button {
-            background: none;
-            color: var(--text);
-            padding: 8px;
-            width: auto;
-            border: 1px solid var(--border);
-            margin-left: 10px;
-        }
-
-        /* Main Container */
-        .container {
-            background: var(--card);
-            padding: 2rem;
-            border-radius: 16px;
-            box-shadow: var(--shadow);
-            width: 100%;
-            max-width: 700px;
-            position: relative;
-            box-sizing: border-box;
-        }
-
-        /* Inputs */
-        textarea {
-            width: 100%;
-            height: 200px;
-            padding: 15px;
-            border: 1px solid var(--border);
-            border-radius: 10px;
-            resize: vertical;
-            font-family: 'Courier New', Courier, monospace;
-            font-size: 1rem;
-            background: var(--bg);
-            color: var(--text);
-            margin-bottom: 1rem;
-            box-sizing: border-box;
-        }
-
-        input[type="text"], input[type="password"], select {
-            width: 100%;
-            padding: 12px;
-            border: 1px solid var(--border);
-            border-radius: 8px;
-            background: var(--bg);
-            color: var(--text);
-            box-sizing: border-box;
-            margin-bottom: 15px;
-        }
-
-        .options-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 15px; margin-bottom: 15px; }
-        .full-width { grid-column: span 2; }
-
-        /* Buttons */
-        button {
-            background-color: var(--primary);
-            color: white;
-            border: none;
-            padding: 14px;
-            border-radius: 8px;
-            cursor: pointer;
-            font-weight: 600;
-            width: 100%;
-            font-size: 1rem;
-            transition: 0.2s;
-        }
-        button:hover { background-color: var(--primary-hover); transform: translateY(-1px); }
-        button.secondary { background-color: transparent; border: 1px solid var(--border); color: var(--text); }
-        button.secondary:hover { background-color: var(--bg); }
-        button.danger { background-color: var(--danger); }
-
-        /* Toggles */
-        .toggle-wrapper {
-            display: flex;
-            align-items: center;
-            gap: 10px;
-            margin-bottom: 15px;
-            font-size: 0.9rem;
-            color: var(--text-light);
-            cursor: pointer;
-        }
-        .toggle-switch {
-            position: relative;
-            display: inline-block;
-            width: 44px;
-            height: 24px;
-        }
-        .toggle-switch input { opacity: 0; width: 0; height: 0; }
-        .slider {
-            position: absolute;
-            cursor: pointer;
-            top: 0; left: 0; right: 0; bottom: 0;
-            background-color: var(--border);
-            border-radius: 34px;
-            transition: .4s;
-        }
-        .slider:before {
-            position: absolute;
-            content: "";
-            height: 18px;
-            width: 18px;
-            left: 3px;
-            bottom: 3px;
-            background-color: white;
-            border-radius: 50%;
-            transition: .4s;
-        }
-        input:checked + .slider { background-color: var(--primary); }
-        input:checked + .slider:before { transform: translateX(20px); }
-
-        /* Result Area */
-        #result-area {
-            margin-top: 20px;
-            padding: 20px;
-            background: var(--bg);
-            border-radius: 12px;
-            text-align: center;
-            border: 1px solid var(--border);
-        }
-        #share-link {
-            word-break: break-all;
-            color: var(--primary);
-            font-weight: bold;
-            font-size: 0.9rem;
-            margin: 10px 0;
-            display: block;
-            padding: 10px;
-            background: var(--card);
-            border-radius: 6px;
-            border: 1px dashed var(--primary);
-        }
-        #qrcode {
-            display: flex;
-            justify-content: center;
-            margin: 20px 0;
-            padding: 10px;
-            background: white; /* QR needs white bg */
-            border-radius: 8px;
-            width: fit-content;
-            margin-left: auto;
-            margin-right: auto;
-        }
-
-        /* Markdown Content */
-        .markdown-body {
-            text-align: left;
-            padding: 20px;
-            background: var(--bg);
-            border-radius: 8px;
-            border: 1px solid var(--border);
-            overflow-x: auto;
-            line-height: 1.6;
-        }
-        .markdown-body code {
-            background: rgba(100,100,100,0.1);
-            padding: 2px 4px;
-            border-radius: 4px;
-            font-family: monospace;
-        }
-        .markdown-body pre {
-            background: rgba(0,0,0,0.8);
-            color: white;
-            padding: 15px;
-            border-radius: 8px;
-            overflow-x: auto;
-        }
-
-        /* History Modal */
-        #history-panel {
-            position: fixed;
-            top: 0; right: -320px;
-            width: 300px;
-            height: 100%;
-            background: var(--card);
-            box-shadow: -5px 0 15px rgba(0,0,0,0.1);
-            transition: 0.3s;
-            z-index: 100;
-            padding: 20px;
-            overflow-y: auto;
-        }
-        #history-panel.open { right: 0; }
-        .history-item {
-            padding: 10px;
-            border-bottom: 1px solid var(--border);
-            cursor: pointer;
-            font-size: 0.9rem;
-        }
-        .history-item:hover { background: var(--bg); }
-        .history-date { font-size: 0.75rem; color: var(--text-light); }
-
-        .hidden { display: none !important; }
-        .error { color: var(--danger); text-align: center; padding: 10px; background: rgba(239, 68, 68, 0.1); border-radius: 8px; }
-        .blur-overlay { position: fixed; top:0; left:0; width:100%; height:100%; background: rgba(0,0,0,0.5); z-index: 90; display: none;}
-        
-        /* Loading Spinner */
-        .spinner {
-            border: 3px solid rgba(0, 0, 0, 0.1);
-            border-radius: 50%;
-            border-top: 3px solid var(--primary);
-            width: 20px;
-            height: 20px;
-            animation: spin 1s linear infinite;
-            margin: 0 auto;
-        }
-        @keyframes spin { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }
-
-        /* --- Additions: focus, hints, toasts --- */
-        :focus-visible { outline: 3px solid var(--primary); outline-offset: 2px; }
-        button:disabled { opacity: 0.65; cursor: progress; transform: none; }
-        .length-hint { font-size: 0.78rem; color: var(--text-light); margin: -0.6rem 0 1rem; min-height: 1.1em; }
-        .length-warn { color: #b45309; }
-        .length-bad { color: var(--danger); }
-        .field-label { display: block; margin-bottom: 5px; font-size: 0.9rem; }
-        .advisory { font-size: 0.78rem; color: var(--text-light); background: rgba(107, 114, 128, 0.1); border-left: 3px solid var(--text-light); padding: 8px 10px; border-radius: 6px; margin: 10px 0; text-align: left; }
-        .empty-note { color: var(--text-light); text-align: center; }
-        #qr-error { color: var(--danger); font-size: 0.85rem; margin: 10px 0; }
-        #unlock-status { color: var(--text-light); font-size: 0.85rem; min-height: 1.2em; }
-        .history-label { font-weight: 600; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
-        #toast { position: fixed; left: 50%; transform: translateX(-50%); bottom: 24px; z-index: 200; display: flex; flex-direction: column; gap: 8px; align-items: center; pointer-events: none; }
-        .toast-item { background: #111827; color: #fff; padding: 10px 16px; border-radius: 999px; font-size: 0.85rem; box-shadow: 0 6px 20px rgba(0,0,0,0.25); opacity: 1; transition: opacity 0.4s, transform 0.4s; max-width: 90vw; }
-        .toast-bad { background: var(--danger); }
-        .toast-out { opacity: 0; transform: translateY(6px); }
-        @media (prefers-reduced-motion: reduce) { * { animation-duration: 0.001ms !important; transition-duration: 0.001ms !important; } }
-
-    </style>
+    <script src="app.js" defer></script>
 </head>
 <body>
 
-    <div class="nav-bar">
-        <div class="logo">
-            <svg class="logo-icon" viewBox="0 0 64 64" role="img" aria-label="SecureShare Pro logo" xmlns="http://www.w3.org/2000/svg">
+    <header class="nav-bar">
+        <a class="logo" href="./" aria-label="SecureShare Pro home">
+            <svg class="logo-icon" viewBox="0 0 64 64" aria-hidden="true" xmlns="http://www.w3.org/2000/svg">
                 <defs>
                     <linearGradient id="logoGrad" x1="0" y1="0" x2="1" y2="1">
                         <stop offset="0" stop-color="#4f46e5"/>
@@ -325,671 +41,136 @@
                 <circle cx="32" cy="39" r="3.2" fill="#4f46e5"/>
                 <rect x="30.5" y="40" width="3" height="6" rx="1.5" fill="#4f46e5"/>
             </svg>
-            SecureShare <span style="font-size: 0.8em; color: var(--text-light); font-weight:normal;">Pro</span>
-        </div>
+            <span class="logo-text">SecureShare <span class="logo-pro">Pro</span></span>
+        </a>
         <div class="nav-actions">
             <button class="secondary" id="theme-toggle-btn" type="button" title="Toggle dark mode" aria-label="Toggle dark mode">🌓</button>
             <button class="secondary" id="history-toggle-btn" type="button" title="Recent clips" aria-label="Recent clips" aria-expanded="false" aria-controls="history-panel">🕒</button>
         </div>
-    </div>
+    </header>
 
     <noscript>
-        <p class="error">This tool encrypts and decrypts entirely in your browser, so it needs JavaScript. Nothing will work without it.</p>
+        <p class="error">Encryption and decryption happen in your browser, so this tool needs JavaScript.</p>
     </noscript>
 
     <div class="blur-overlay" id="history-overlay"></div>
-    <div id="history-panel" role="dialog" aria-label="Recent clips">
-        <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:20px;">
-            <h3 style="margin:0;">Recents</h3>
-            <button class="secondary" id="clear-history-btn" type="button" style="width:auto; padding:5px 10px;">Clear</button>
+    <aside id="history-panel" role="dialog" aria-label="Recent clips">
+        <div class="panel-head">
+            <h3>Recent clips</h3>
+            <button class="secondary" id="clear-history-btn" type="button">Clear</button>
         </div>
         <div id="history-list">
-            <p class="empty-note">No history yet.</p>
+            <p class="empty-note">No clips yet.</p>
         </div>
-        <p class="advisory" style="margin-top:16px;">Recents are kept in this browser only, and each entry holds the full link — key included. Clear them on a shared machine.</p>
-    </div>
+        <p class="advisory">Kept in this browser only. A clip's link includes its key, so clear this on a shared machine.</p>
+    </aside>
 
-    <div class="container">
+    <main class="container">
 
-        <div id="create-view">
-            <h2>Create Encrypted Clip</h2>
+        <section id="create-view">
+            <h2>Create an encrypted clip</h2>
+            <p class="lede">Your text is encrypted here, in this tab. The server stores ciphertext it cannot read, and enforces the expiry and view limits below.</p>
 
             <label class="field-label" for="clip-text">Content (Markdown supported)</label>
-            <textarea id="clip-text" placeholder="Type or paste what you want to share..."></textarea>
+            <textarea id="clip-text" placeholder="Paste a password, an API key, a note…"></textarea>
             <p id="length-hint" class="length-hint" aria-live="polite"></p>
 
             <div class="options-grid">
                 <div>
-                    <label class="field-label" for="expiry-select">Expiration</label>
+                    <label class="field-label" for="expiry-select">Expires after</label>
                     <select id="expiry-select">
+                        <option value="60">1 hour</option>
+                        <option value="1440" selected>1 day</option>
+                        <option value="10080">1 week</option>
                         <option value="0">Never</option>
-                        <option value="5">5 Minutes</option>
-                        <option value="60">1 Hour</option>
-                        <option value="1440">1 Day</option>
-                        <option value="10080">1 Week</option>
                     </select>
                 </div>
                 <div>
-                    <label class="field-label" for="password-input">Password (optional)</label>
-                    <input type="password" id="password-input" placeholder="Leave empty for a one-click link" autocomplete="new-password">
+                    <label class="field-label" for="views-select">Opens allowed</label>
+                    <select id="views-select">
+                        <option value="1" selected>1 — burn after reading</option>
+                        <option value="5">5</option>
+                        <option value="25">25</option>
+                        <option value="0">Unlimited</option>
+                    </select>
                 </div>
             </div>
 
-            <div class="toggle-wrapper">
-                <label class="toggle-switch">
-                    <input type="checkbox" id="burn-toggle" aria-label="Hide the link from this browser after it is read">
-                    <span class="slider"></span>
-                </label>
-                <span>🔥 Burn after reading (clears the address bar once opened)</span>
-            </div>
+            <label class="field-label" for="password-input">Password (optional, extra layer)</label>
+            <input type="password" id="password-input" placeholder="Leave empty for a one-click link" autocomplete="new-password">
 
-            <button id="generate-btn" type="button">Generate Secure Link</button>
+            <button id="generate-btn" type="button">Create secure link</button>
 
             <div id="result-area" class="hidden">
-                <h3 style="margin-top:0;">Link Created</h3>
+                <h3>Link created</h3>
+                <p id="result-meta" class="result-meta"></p>
                 <div id="qrcode"></div>
                 <p id="qr-error" class="hidden"></p>
-                <div id="share-link"></div>
-
+                <p class="label-small">Share link</p>
+                <div id="share-link" class="code-block"></div>
                 <div class="options-grid">
-                    <button class="secondary" id="copy-link-btn" type="button">📋 Copy Link</button>
-                    <button class="secondary" id="shorten-btn" type="button">✂️ Shorten</button>
+                    <button class="secondary" id="copy-link-btn" type="button">📋 Copy link</button>
+                    <button class="secondary" id="copy-manage-btn" type="button">🔑 Copy manage link</button>
                 </div>
-                <p class="advisory">Send this link over a channel you trust. Without a password the decryption key travels inside the link itself, after the # — so anyone holding the whole link can read the clip.</p>
+                <p class="label-small">Manage link (keep this private — it can delete the clip)</p>
+                <div id="manage-link" class="code-block subtle-block"></div>
+                <p class="advisory">Send the link over a channel you trust. Without a password the decryption key rides in the link after the <code>#</code>, which browsers never send to a server.</p>
             </div>
-        </div>
+        </section>
 
-        <div id="unlock-view" class="hidden" style="text-align: center;">
-            <h2>🔒 Password Required</h2>
-            <p style="color: var(--text-light);">This clip is encrypted with AES-256-GCM. Enter the password you were given.</p>
-            <label class="field-label" for="unlock-password" style="text-align:left; max-width:300px; margin:0 auto;">Password</label>
-            <input type="password" id="unlock-password" placeholder="Enter password..." autocomplete="current-password" style="max-width: 300px; margin: 8px auto 20px;">
-            <button id="unlock-btn" type="button" style="max-width: 300px;">Unlock</button>
-            <p id="unlock-status" aria-live="polite"></p>
-            <p id="unlock-error" class="error hidden" role="alert" style="margin-top:15px;"></p>
-        </div>
+        <section id="open-view" class="hidden">
+            <h2>A secure clip is waiting</h2>
+            <p class="lede">Opening it uses one of the opens its sender allowed, and the link may stop working straight afterwards. Open it only when you are ready to read it.</p>
+            <p class="label-small">Clip ID</p>
+            <div id="open-target" class="code-block subtle-block"></div>
+            <button id="open-btn" type="button">Open clip</button>
+        </section>
 
-        <div id="read-view" class="hidden">
-            <div style="display:flex; justify-content:space-between; align-items:center;">
-                <h2>📄 Shared Clip</h2>
-                <span id="burn-badge" class="hidden" style="background:var(--danger); color:white; padding:4px 8px; border-radius:4px; font-size:0.8rem;">🔥 Link cleared</span>
-            </div>
-            <p id="expiry-display" style="color:var(--text-light); font-size:0.9rem; margin-top:-10px;"></p>
-            <p id="advisory" class="advisory hidden"></p>
+        <section id="unlock-view" class="hidden">
+            <h2>Password required</h2>
+            <p class="lede">This clip has a password. The key is derived from it in your browser — it is never sent anywhere.</p>
+            <p id="unlock-note" class="advisory"></p>
+            <label class="field-label" for="unlock-password">Password</label>
+            <input type="password" id="unlock-password" placeholder="Enter password…" autocomplete="current-password">
+            <button id="unlock-btn" type="button">Unlock</button>
+            <p id="unlock-error" class="error hidden" role="alert"></p>
+        </section>
 
+        <section id="read-view" class="hidden">
+            <h2>Shared clip</h2>
+            <p id="read-meta" class="result-meta"></p>
             <div id="content-display" class="markdown-body"></div>
-
-            <div class="options-grid" style="margin-top: 20px;">
-                <button id="copy-content-btn" type="button">Copy Content</button>
-                <button class="secondary" id="new-clip-btn" type="button">Create New</button>
+            <div class="options-grid">
+                <button id="copy-content-btn" type="button">Copy content</button>
+                <button class="secondary" id="new-clip-btn" type="button">Create new clip</button>
             </div>
-        </div>
+        </section>
 
-        <div id="error-view" class="hidden" style="text-align: center;">
-            <div style="font-size: 3rem;">⚠️</div>
-            <h2>Content Unavailable</h2>
-            <p id="error-message">This clip has expired, or the URL is invalid.</p>
-            <button id="new-clip-btn-2" type="button">Create New Clip</button>
-        </div>
+        <section id="manage-view" class="hidden">
+            <h2>Manage clip</h2>
+            <p id="manage-status" class="lede"></p>
+            <div id="manage-body">
+                <p id="manage-created" class="label-small"></p>
+                <p id="manage-expires" class="label-small"></p>
+            </div>
+            <button class="danger" id="manage-delete" type="button">Delete this clip</button>
+            <p class="advisory">Deleting is immediate and permanent. Anyone still holding the link will get nothing.</p>
+        </section>
 
-    </div>
+        <section id="error-view" class="hidden">
+            <div class="error-icon" aria-hidden="true">⚠️</div>
+            <h2>Clip unavailable</h2>
+            <p id="error-message"></p>
+            <button id="new-clip-btn-2" type="button">Create a new clip</button>
+        </section>
+
+    </main>
+
+    <footer class="site-footer">
+        <p>Client-side AES-256-GCM · keys never leave the browser · <a href="https://github.com/pandasuryanarayan/Online-Sharing-Clipboard">source</a> · GPL-3.0</p>
+    </footer>
 
     <div id="toast" aria-live="polite" aria-atomic="true"></div>
 
-    <script>
-        // --- CONFIG & STATE ---
-        const PBKDF2_ITERATIONS = 600000;
-        const QR_SAFE_LIMIT = 2500;
-        const URL_WARN_LIMIT = 1800;
-
-        const appState = {
-            wrapper: null,
-            rawText: '',
-            hasPassword: false,
-            busy: false
-        };
-
-        const te = new TextEncoder();
-        const td = new TextDecoder();
-        const subtle = window.crypto && window.crypto.subtle;
-
-        // --- ENCODING HELPERS ---
-        function toB64u(bytes) {
-            const b = new Uint8Array(bytes);
-            let s = '';
-            for (let i = 0; i < b.length; i++) s += String.fromCharCode(b[i]);
-            return btoa(s).replace(/\+/g, '-').replace(/\//g, '_').replace(/=+$/, '');
-        }
-
-        function fromB64u(str) {
-            let s = String(str).replace(/-/g, '+').replace(/_/g, '/');
-            while (s.length % 4) s += '=';
-            const bin = atob(s);
-            const out = new Uint8Array(bin.length);
-            for (let i = 0; i < bin.length; i++) out[i] = bin.charCodeAt(i);
-            return out;
-        }
-
-        function encodeJson(obj) { return te.encode(JSON.stringify(obj)); }
-
-        // --- TOASTS ---
-        function toast(msg, kind) {
-            const host = document.getElementById('toast');
-            if (!host) { return; }
-            const el = document.createElement('div');
-            el.className = 'toast-item' + (kind ? ' toast-' + kind : '');
-            el.textContent = msg;
-            host.appendChild(el);
-            setTimeout(() => { el.classList.add('toast-out'); }, 2600);
-            setTimeout(() => { el.remove(); }, 3100);
-        }
-
-        // --- THEME ---
-        function applyTheme(mode) {
-            const root = document.documentElement;
-            if (mode === 'dark') {
-                root.setAttribute('data-theme', 'dark');
-            } else {
-                root.removeAttribute('data-theme');
-            }
-        }
-
-        function toggleTheme() {
-            const isDark = document.documentElement.hasAttribute('data-theme');
-            const next = isDark ? 'light' : 'dark';
-            applyTheme(next);
-            try { localStorage.setItem('theme', next); } catch (e) {}
-        }
-
-        // --- INIT ---
-        document.addEventListener('DOMContentLoaded', function () {
-            bindUI();
-            const params = new URLSearchParams(window.location.search);
-            const data = params.get('d');
-            if (data) {
-                processIncomingData(data);
-            }
-        });
-
-        function bindUI() {
-            const on = (id, ev, fn) => {
-                const el = document.getElementById(id);
-                if (el) el.addEventListener(ev, fn);
-            };
-
-            on('theme-toggle-btn', 'click', toggleTheme);
-            on('history-toggle-btn', 'click', toggleHistory);
-            on('history-overlay', 'click', toggleHistory);
-            on('clear-history-btn', 'click', clearHistory);
-            on('generate-btn', 'click', generateLink);
-            on('clip-text', 'input', updateLengthHint);
-            on('unlock-btn', 'click', attemptUnlock);
-            on('unlock-password', 'keydown', function (e) {
-                if (e.key === 'Enter') { e.preventDefault(); attemptUnlock(); }
-            });
-            on('copy-link-btn', 'click', function () {
-                copyText(document.getElementById('share-link').innerText, 'Link copied');
-            });
-            on('shorten-btn', 'click', openShortener);
-            on('copy-content-btn', 'click', function () {
-                copyText(appState.rawText, 'Content copied');
-            });
-            on('new-clip-btn', 'click', resetToCreate);
-            on('new-clip-btn-2', 'click', resetToCreate);
-
-            updateLengthHint();
-        }
-
-        function resetToCreate() {
-            window.location.href = window.location.pathname;
-        }
-
-        // --- CREATE ---
-        function updateLengthHint() {
-            const ta = document.getElementById('clip-text');
-            const hint = document.getElementById('length-hint');
-            if (!ta || !hint) return;
-            const n = ta.value.length;
-            if (!n) { hint.textContent = ''; hint.className = 'length-hint'; return; }
-            const approx = Math.round((n + 90) * 1.37) + 70;
-            let msg = n.toLocaleString() + ' characters \u00b7 link will be about ' + approx.toLocaleString() + ' characters';
-            let cls = 'length-hint';
-            if (approx > QR_SAFE_LIMIT) {
-                msg += ' \u00b7 too long for a QR code, copy the link instead';
-                cls += ' length-bad';
-            } else if (approx > URL_WARN_LIMIT) {
-                msg += ' \u00b7 Long link, some chat apps may truncate it';
-                cls += ' length-warn';
-            }
-            hint.textContent = msg;
-            hint.className = cls;
-        }
-
-        async function generateLink() {
-            if (appState.busy) return;
-            const text = document.getElementById('clip-text').value;
-            const password = document.getElementById('password-input').value;
-            const expiryMinutes = parseInt(document.getElementById('expiry-select').value, 10);
-            const isBurn = document.getElementById('burn-toggle').checked;
-
-            if (!text.trim()) { toast('Type something to share first', 'bad'); return; }
-            if (!subtle) { showFatal('This browser does not support Web Crypto, so nothing can be encrypted here.'); return; }
-
-            setBusy(true);
-            try {
-                const payload = {
-                    v: 2,
-                    t: text,
-                    e: expiryMinutes > 0 ? Date.now() + expiryMinutes * 60000 : 0,
-                    b: isBurn ? 1 : 0
-                };
-
-                const iv = crypto.getRandomValues(new Uint8Array(12));
-                const plaintext = encodeJson(payload);
-                let wrapper, fragment = '';
-
-                if (password) {
-                    const salt = crypto.getRandomValues(new Uint8Array(16));
-                    const baseKey = await subtle.importKey('raw', te.encode(password), 'PBKDF2', false, ['deriveKey']);
-                    const key = await subtle.deriveKey(
-                        { name: 'PBKDF2', salt: salt, iterations: PBKDF2_ITERATIONS, hash: 'SHA-256' },
-                        baseKey,
-                        { name: 'AES-GCM', length: 256 },
-                        false,
-                        ['encrypt']
-                    );
-                    const ct = await subtle.encrypt({ name: 'AES-GCM', iv: iv }, key, plaintext);
-                    wrapper = { v: 2, m: 'p', i: toB64u(iv), s: toB64u(salt), c: toB64u(ct) };
-                } else {
-                    const rawKey = crypto.getRandomValues(new Uint8Array(32));
-                    const key = await subtle.importKey('raw', rawKey, 'AES-GCM', false, ['encrypt']);
-                    const ct = await subtle.encrypt({ name: 'AES-GCM', iv: iv }, key, plaintext);
-                    wrapper = { v: 2, m: 'k', i: toB64u(iv), c: toB64u(ct) };
-                    // The key travels in the URL fragment: never sent to a server, never in Referer.
-                    fragment = '#k=' + toB64u(rawKey);
-                }
-
-                const base = window.location.href.split('?')[0].split('#')[0];
-                const fullUrl = base + '?d=' + toB64u(encodeJson(wrapper)) + fragment;
-
-                showResult(fullUrl);
-                saveToHistory(fullUrl, text.length);
-            } catch (err) {
-                console.error(err);
-                toast('Could not create the link: ' + (err && err.message ? err.message : 'unknown error'), 'bad');
-            } finally {
-                setBusy(false);
-            }
-        }
-
-        function setBusy(state) {
-            appState.busy = state;
-            const btn = document.getElementById('generate-btn');
-            if (!btn) return;
-            btn.disabled = state;
-            btn.textContent = state ? 'Encrypting\u2026' : 'Generate Secure Link';
-        }
-
-        function showResult(url) {
-            document.getElementById('result-area').classList.remove('hidden');
-            document.getElementById('share-link').innerText = url;
-            renderQr(url);
-        }
-
-        function renderQr(url) {
-            const host = document.getElementById('qrcode');
-            const err = document.getElementById('qr-error');
-            host.innerHTML = '';
-            err.classList.add('hidden');
-
-            if (url.length > QR_SAFE_LIMIT) {
-                err.textContent = 'This clip is too long to fit in a QR code. Use Copy Link instead.';
-                err.classList.remove('hidden');
-                return;
-            }
-            if (typeof QRCode === 'undefined') {
-                err.textContent = 'The QR code library could not be loaded. Use Copy Link instead.';
-                err.classList.remove('hidden');
-                return;
-            }
-            try {
-                new QRCode(host, {
-                    text: url,
-                    width: 148,
-                    height: 148,
-                    correctLevel: QRCode.CorrectLevel.L
-                });
-            } catch (e) {
-                console.error(e);
-                err.textContent = 'This clip is too long to fit in a QR code. Use Copy Link instead.';
-                err.classList.remove('hidden');
-            }
-        }
-
-        // --- READ ---
-        function processIncomingData(encodedStr) {
-            document.getElementById('create-view').classList.add('hidden');
-
-            let wrapper;
-            try {
-                wrapper = JSON.parse(td.decode(fromB64u(encodedStr)));
-            } catch (e) {
-                showError('This link is damaged or incomplete. Ask the sender for a fresh one.');
-                return;
-            }
-
-            if (!wrapper || wrapper.v !== 2) {
-                showError('This link was created with an older version of SecureShare Pro and can no longer be opened. Ask the sender to create a new one.');
-                return;
-            }
-
-            appState.wrapper = wrapper;
-            appState.hasPassword = wrapper.m === 'p';
-
-            if (appState.hasPassword) {
-                document.getElementById('unlock-view').classList.remove('hidden');
-                const input = document.getElementById('unlock-password');
-                if (input) input.focus();
-            } else {
-                const key = readKeyFromFragment();
-                if (!key) {
-                    showError('This link is missing its key. The part after the # was lost, which happens when a link gets truncated in chat. Ask the sender to resend it whole.');
-                    return;
-                }
-                decryptAndShow(key, 'raw');
-            }
-        }
-
-        function readKeyFromFragment() {
-            const hash = window.location.hash || '';
-            const m = hash.match(/[#&]k=([A-Za-z0-9_-]+)/);
-            if (!m) return null;
-            try {
-                const raw = fromB64u(m[1]);
-                if (raw.length !== 32) return null;
-                return raw;
-            } catch (e) {
-                return null;
-            }
-        }
-
-        async function attemptUnlock() {
-            if (appState.busy) return;
-            const password = document.getElementById('unlock-password').value;
-            if (!password) { showUnlockError('Enter the password first.'); return; }
-            await decryptAndShow(password, 'password');
-        }
-
-        function showUnlockError(msg) {
-            const el = document.getElementById('unlock-error');
-            el.textContent = msg;
-            el.classList.remove('hidden');
-        }
-
-        async function decryptAndShow(secret, mode) {
-            if (!subtle) { showError('This browser does not support Web Crypto, so the clip cannot be opened here.'); return; }
-            setUnlocking(true);
-            const errEl = document.getElementById('unlock-error');
-            errEl.classList.add('hidden');
-
-            try {
-                const w = appState.wrapper;
-                const iv = fromB64u(w.i);
-                const ct = fromB64u(w.c);
-                let key;
-
-                if (mode === 'password') {
-                    const baseKey = await subtle.importKey('raw', te.encode(secret), 'PBKDF2', false, ['deriveKey']);
-                    key = await subtle.deriveKey(
-                        { name: 'PBKDF2', salt: fromB64u(w.s), iterations: PBKDF2_ITERATIONS, hash: 'SHA-256' },
-                        baseKey,
-                        { name: 'AES-GCM', length: 256 },
-                        false,
-                        ['decrypt']
-                    );
-                } else {
-                    key = await subtle.importKey('raw', secret, 'AES-GCM', false, ['decrypt']);
-                }
-
-                const plainBuf = await subtle.decrypt({ name: 'AES-GCM', iv: iv }, key, ct);
-                const payload = JSON.parse(td.decode(plainBuf));
-
-                if (payload.e > 0 && Date.now() > payload.e) {
-                    showError('This clip expired on ' + new Date(payload.e).toLocaleString() + ' and is no longer being shown.');
-                    return;
-                }
-
-                renderClip(payload);
-
-            } catch (e) {
-                if (mode === 'password') {
-                    showUnlockError('Wrong password, or this link is damaged.');
-                } else {
-                    showError('This link could not be decrypted. It may have been truncated when it was copied.');
-                }
-            } finally {
-                setUnlocking(false);
-            }
-        }
-
-        function setUnlocking(state) {
-            appState.busy = state;
-            const btn = document.getElementById('unlock-btn');
-            const status = document.getElementById('unlock-status');
-            if (btn) { btn.disabled = state; btn.textContent = state ? 'Unlocking\u2026' : 'Unlock'; }
-            if (status) {
-                status.textContent = state ? 'Deriving key\u2026 this takes a moment' : '';
-            }
-        }
-
-        function renderClip(payload) {
-            document.getElementById('unlock-view').classList.add('hidden');
-            document.getElementById('read-view').classList.remove('hidden');
-
-            const content = document.getElementById('content-display');
-            content.innerHTML = sanitizeHtml(marked.parse(payload.t));
-
-            const burnBadge = document.getElementById('burn-badge');
-            if (payload.b === 1) {
-                // Clear the address bar so this device does not keep the link.
-                try {
-                    window.history.replaceState({}, document.title, window.location.pathname);
-                } catch (e) {}
-                burnBadge.classList.remove('hidden');
-            } else {
-                burnBadge.classList.add('hidden');
-            }
-
-            const expDiv = document.getElementById('expiry-display');
-            if (payload.e > 0) {
-                expDiv.innerText = 'Expires ' + new Date(payload.e).toLocaleString();
-            } else {
-                expDiv.innerText = 'Does not expire';
-            }
-
-            const advisory = document.getElementById('advisory');
-            if (payload.e > 0 || payload.b === 1) {
-                advisory.textContent = 'Expiry and burn-after-reading are checked by this browser only. Someone who saved the link or changed their clock can still read it \u2014 see the README for why.';
-                advisory.classList.remove('hidden');
-            } else {
-                advisory.classList.add('hidden');
-            }
-
-            appState.rawText = payload.t;
-        }
-
-        // --- SANITISER ---
-        // marked passes raw HTML straight through, so everything it produces is
-        // rebuilt against a whitelist before it touches the DOM.
-        const ALLOWED_TAGS = new Set([
-            'P', 'BR', 'HR', 'STRONG', 'B', 'EM', 'I', 'DEL', 'S', 'CODE', 'PRE',
-            'BLOCKQUOTE', 'UL', 'OL', 'LI', 'H1', 'H2', 'H3', 'H4', 'H5', 'H6',
-            'A', 'TABLE', 'THEAD', 'TBODY', 'TR', 'TH', 'TD', 'SPAN', 'DIV'
-        ]);
-        const DROP_TAGS = 'script,style,iframe,object,embed,link,meta,img,svg,math,form,input,button,textarea,select,base,video,audio,source,track,canvas';
-
-        function sanitizeHtml(html) {
-            const doc = new DOMParser().parseFromString(String(html), 'text/html');
-            const body = doc.body;
-
-            body.querySelectorAll(DROP_TAGS).forEach(function (n) { n.remove(); });
-
-            // Unwrap any element that is not on the whitelist, keeping its text.
-            let guard = 0;
-            for (;;) {
-                const bad = Array.prototype.filter.call(body.querySelectorAll('*'), function (el) {
-                    return !ALLOWED_TAGS.has(el.tagName);
-                });
-                if (!bad.length || guard++ > 60) break;
-                bad.forEach(function (el) {
-                    const parent = el.parentNode;
-                    if (!parent) return;
-                    while (el.firstChild) parent.insertBefore(el.firstChild, el);
-                    el.remove();
-                });
-            }
-
-            body.querySelectorAll('*').forEach(function (el) {
-                Array.prototype.slice.call(el.attributes).forEach(function (attr) {
-                    const name = attr.name.toLowerCase();
-                    const value = String(attr.value || '').trim();
-                    let keep = false;
-
-                    if (el.tagName === 'A' && name === 'href') {
-                        keep = /^https?:\/\//i.test(value) || /^mailto:/i.test(value) || /^#/.test(value);
-                    } else if (el.tagName === 'CODE' && name === 'class') {
-                        keep = /^language-[A-Za-z0-9_+-]+$/.test(value);
-                    } else if ((el.tagName === 'TH' || el.tagName === 'TD') && name === 'align') {
-                        keep = /^(left|right|center)$/i.test(value);
-                    }
-
-                    if (!keep) el.removeAttribute(attr.name);
-                });
-
-                if (el.tagName === 'A' && el.hasAttribute('href')) {
-                    el.setAttribute('rel', 'noopener noreferrer nofollow');
-                    el.setAttribute('target', '_blank');
-                }
-            });
-
-            return body.innerHTML;
-        }
-
-        // --- UTILS ---
-        async function copyText(text, okMessage) {
-            if (!text) { toast('Nothing to copy yet', 'bad'); return; }
-            try {
-                if (navigator.clipboard && window.isSecureContext) {
-                    await navigator.clipboard.writeText(text);
-                    toast(okMessage || 'Copied');
-                    return;
-                }
-            } catch (e) { /* fall through to the legacy path */ }
-
-            const ta = document.createElement('textarea');
-            ta.value = text;
-            ta.setAttribute('readonly', '');
-            ta.style.position = 'fixed';
-            ta.style.top = '-1000px';
-            ta.style.opacity = '0';
-            document.body.appendChild(ta);
-            ta.select();
-            let ok = false;
-            try { ok = document.execCommand('copy'); } catch (e) { ok = false; }
-            ta.remove();
-            toast(ok ? (okMessage || 'Copied') : 'Copy failed \u2014 select the text and copy it manually', ok ? '' : 'bad');
-        }
-
-        function openShortener() {
-            const longUrl = document.getElementById('share-link').innerText;
-            if (!longUrl) return;
-            window.open('https://tinyurl.com/create.php?url=' + encodeURIComponent(longUrl), '_blank', 'noopener');
-        }
-
-        function showError(message) {
-            ['create-view', 'unlock-view', 'read-view'].forEach(function (id) {
-                const el = document.getElementById(id);
-                if (el) el.classList.add('hidden');
-            });
-            const msg = document.getElementById('error-message');
-            if (msg && message) msg.textContent = message;
-            document.getElementById('error-view').classList.remove('hidden');
-        }
-
-        function showFatal(message) {
-            showError(message);
-        }
-
-        // --- HISTORY ---
-        function toggleHistory() {
-            const panel = document.getElementById('history-panel');
-            const overlay = document.getElementById('history-overlay');
-            if (panel.classList.contains('open')) {
-                panel.classList.remove('open');
-                overlay.style.display = 'none';
-                document.getElementById('history-toggle-btn').setAttribute('aria-expanded', 'false');
-            } else {
-                renderHistory();
-                panel.classList.add('open');
-                overlay.style.display = 'block';
-                document.getElementById('history-toggle-btn').setAttribute('aria-expanded', 'true');
-            }
-        }
-
-        function readHistory() {
-            try { return JSON.parse(localStorage.getItem('clipHistory') || '[]'); } catch (e) { return []; }
-        }
-
-        function saveToHistory(url, length) {
-            try {
-                const hist = readHistory();
-                hist.unshift({ url: url, date: new Date().toLocaleString(), len: length });
-                localStorage.setItem('clipHistory', JSON.stringify(hist.slice(0, 10)));
-            } catch (e) { /* storage full or blocked; not fatal */ }
-        }
-
-        function renderHistory() {
-            const list = document.getElementById('history-list');
-            const hist = readHistory();
-            list.innerHTML = '';
-
-            if (!hist.length) {
-                const p = document.createElement('p');
-                p.className = 'empty-note';
-                p.textContent = 'No history yet.';
-                list.appendChild(p);
-                return;
-            }
-
-            hist.forEach(function (item) {
-                const row = document.createElement('div');
-                row.className = 'history-item';
-                row.setAttribute('role', 'button');
-                row.tabIndex = 0;
-
-                const label = document.createElement('div');
-                label.className = 'history-label';
-                label.textContent = 'Clip \u00b7 ' + (item.len || 0) + ' characters';
-
-                const date = document.createElement('div');
-                date.className = 'history-date';
-                date.textContent = item.date || '';
-
-                row.appendChild(label);
-                row.appendChild(date);
-                row.addEventListener('click', function () { window.location.href = item.url; });
-                row.addEventListener('keydown', function (e) {
-                    if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); window.location.href = item.url; }
-                });
-                list.appendChild(row);
-            });
-        }
-
-        function clearHistory() {
-            try { localStorage.removeItem('clipHistory'); } catch (e) {}
-            renderHistory();
-            toast('Recents cleared');
-        }
-    </script>
 </body>
 </html>
