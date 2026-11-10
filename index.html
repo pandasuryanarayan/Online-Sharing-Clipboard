@@ -82,7 +82,7 @@
                     <select id="expiry-select">
                         <option value="60">1 hour</option>
                         <option value="1440" selected>1 day</option>
-                        <option value="10080">1 week</option>
+                        <option value="10080">1 week </option>
                         <option value="0">Never</option>
                     </select>
                 </div>
@@ -97,13 +97,13 @@
                 </div>
             </div>
 
-            <label class="field-label" for="password-input">Password (optional — setting one turns off PIN access)</label>
-            <input type="password" id="password-input" placeholder="Leave empty for a one-click link" autocomplete="new-password">
+            <label class="field-label" for="password-input">Password (optional — the real lock)</label>
+            <input type="password" id="password-input" placeholder="Leave empty to open with the PIN or the link alone" autocomplete="new-password">
 
             <div class="pin-redeem">
-                <label class="field-label" for="pin-input">Got a 4-digit PIN instead of a link?</label>
+                <label class="field-label" for="pin-input">Got a 5-digit PIN instead of a link?</label>
                 <div class="pin-row">
-                    <input type="text" id="pin-input" inputmode="numeric" autocomplete="one-time-code" maxlength="4" placeholder="0000" aria-describedby="pin-error">
+                    <input type="text" id="pin-input" inputmode="numeric" autocomplete="one-time-code" maxlength="5" placeholder="00000" aria-describedby="pin-error">
                     <button class="secondary" id="pin-btn" type="button">Open</button>
                 </div>
                 <p id="pin-error" class="error hidden" role="alert"></p>
@@ -117,11 +117,10 @@
                 <div id="qrcode"></div>
                 <p id="qr-error" class="hidden"></p>
                 <div id="pin-block" class="pin-block hidden">
-                    <p class="label-small">4-digit PIN</p>
+                    <p class="label-small">5-digit PIN</p>
                     <div id="pin-value" class="pin-value"></div>
-                    <p class="advisory">Read this out over a call, or send it by a different channel. Anyone with the PIN can open this clip without the link, and it dies when the clip does.</p>
+                    <p id="pin-note" class="advisory"></p>
                 </div>
-                <p id="no-pin-note" class="advisory hidden">No PIN for this clip: a 4-digit PIN would be weaker than the password you set, so it is not offered. Leave the password empty if you want a PIN instead.</p>
                 <p class="label-small">Share link</p>
                 <div id="share-link" class="code-block"></div>
                 <div class="options-grid">
