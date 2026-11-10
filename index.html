@@ -100,6 +100,15 @@
             <label class="field-label" for="password-input">Password (optional, extra layer)</label>
             <input type="password" id="password-input" placeholder="Leave empty for a one-click link" autocomplete="new-password">
 
+            <div class="pin-redeem">
+                <label class="field-label" for="pin-input">Got a 4-digit PIN instead of a link?</label>
+                <div class="pin-row">
+                    <input type="text" id="pin-input" inputmode="numeric" autocomplete="one-time-code" maxlength="4" placeholder="0000" aria-describedby="pin-error">
+                    <button class="secondary" id="pin-btn" type="button">Open</button>
+                </div>
+                <p id="pin-error" class="error hidden" role="alert"></p>
+            </div>
+
             <button id="generate-btn" type="button">Create secure link</button>
 
             <div id="result-area" class="hidden">
@@ -107,6 +116,11 @@
                 <p id="result-meta" class="result-meta"></p>
                 <div id="qrcode"></div>
                 <p id="qr-error" class="hidden"></p>
+                <div id="pin-block" class="pin-block hidden">
+                    <p class="label-small">4-digit PIN</p>
+                    <div id="pin-value" class="pin-value"></div>
+                    <p class="advisory">Read this out over a call, or send it by a different channel. Anyone with the PIN can open this clip without the link, and it dies when the clip does.</p>
+                </div>
                 <p class="label-small">Share link</p>
                 <div id="share-link" class="code-block"></div>
                 <div class="options-grid">
