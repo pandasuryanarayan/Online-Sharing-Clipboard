@@ -1,9 +1,9 @@
 -- Security self-check for the SecureShare Pro database.
 --
 -- Run this after any schema change. Every row must read passed = true.
--- It asserts the invariants the app depends on, in particular that the
--- `anon` role — the only role the browser can act as — can reach exactly
--- three functions and no table at all.
+-- It asserts the invariants the app depends on, in particular that the roles
+-- PostgREST can act as — `anon` and `authenticated` — can reach exactly three
+-- functions and no table at all.
 --
 --   select * from ( <this file> ) t;                -- eyeball every row
 --   select bool_and(passed) from ( <this file> ) t; -- one boolean answer
@@ -12,12 +12,21 @@
 -- attack surface has not grown should not itself add to it.
 
 with
+-- Both roles PostgREST can act as. `authenticated` is unused by this app today,
+-- but a grant to it would be just as bad as a grant to anon, so both are measured.
 anon_fns as (
     select p.proname
       from pg_proc p
       join pg_namespace n on n.oid = p.pronamespace
      where n.nspname = 'public'
        and has_function_privilege('anon', p.oid, 'EXECUTE')
+),
+auth_fns as (
+    select p.proname
+      from pg_proc p
+      join pg_namespace n on n.oid = p.pronamespace
+     where n.nspname = 'public'
+       and has_function_privilege('authenticated', p.oid, 'EXECUTE')
 ),
 anon_tables as (
     select c.relname
@@ -29,6 +38,17 @@ anon_tables as (
          or has_table_privilege('anon', c.oid, 'INSERT')
          or has_table_privilege('anon', c.oid, 'UPDATE')
          or has_table_privilege('anon', c.oid, 'DELETE'))
+),
+auth_tables as (
+    select c.relname
+      from pg_class c
+      join pg_namespace n on n.oid = c.relnamespace
+     where n.nspname = 'public'
+       and c.relkind in ('r', 'v', 'm', 'p')
+       and (has_table_privilege('authenticated', c.oid, 'SELECT')
+         or has_table_privilege('authenticated', c.oid, 'INSERT')
+         or has_table_privilege('authenticated', c.oid, 'UPDATE')
+         or has_table_privilege('authenticated', c.oid, 'DELETE'))
 )
 select 'anon can reach no table'::text as check_name,
        (select count(*) from anon_tables) = 0 as passed,
@@ -41,6 +61,20 @@ select 'anon can execute exactly create_clip, read_clip, redeem_pin',
        coalesce((select array_agg(proname order by proname) from anon_fns), '{}'::name[])
          = array['create_clip', 'read_clip', 'redeem_pin']::name[],
        'executable: ' || coalesce((select string_agg(proname, ', ' order by proname) from anon_fns), 'none')
+
+union all
+
+select 'authenticated can reach no table',
+       (select count(*) from auth_tables) = 0,
+       coalesce('granted on: ' || (select string_agg(relname, ', ') from auth_tables),
+                'no table privileges')::text
+
+union all
+
+select 'authenticated can execute exactly the same three functions',
+       coalesce((select array_agg(proname order by proname) from auth_fns), '{}'::name[])
+         = array['create_clip', 'read_clip', 'redeem_pin']::name[],
+       'executable: ' || coalesce((select string_agg(proname, ', ' order by proname) from auth_fns), 'none')
 
 union all
 
