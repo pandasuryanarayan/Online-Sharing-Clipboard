@@ -62,7 +62,12 @@ class ApiError extends Error {
 }
 
 const FRIENDLY = {
-  rate_limited: 'Too many clips created from this connection in the last hour. Try again later.',
+  rate_limited: 'Too many attempts from this connection in the last hour. Try again later.',
+  invalid_pin: 'That PIN did not match anything. It may be wrong, expired, or already used.',
+  pin_taken: 'That PIN is already in use. Try again.',
+  pin_needs_key_mode: 'PINs are only available for links without a password.',
+  invalid_pin_wrapped: 'Could not set up the PIN. Please try again.',
+  invalid_pin_salt: 'Could not set up the PIN. Please try again.',
   clip_not_found: 'This clip is gone. It has been opened the allowed number of times, expired, or was deleted by its sender.',
   clip_gone: 'This clip has expired.',
   invalid_expiry: 'That expiry time is not allowed.',
@@ -114,6 +119,42 @@ async function deriveKey(password, salt) {
     false,
     ['encrypt', 'decrypt']
   );
+}
+
+/* ---------- pin ---------- */
+
+// Uniform 4-digit code. Rejection sampling avoids the modulo bias that would
+// make some PINs slightly likelier than others.
+function randomPin() {
+  const buf = new Uint32Array(1);
+  const limit = 65536 - (65536 % 10000);
+  for (;;) {
+    crypto.getRandomValues(buf);
+    const v = buf[0] % 65536;
+    if (v < limit) return String(v % 10000).padStart(4, '0');
+  }
+}
+
+// Wrap the content key under a key derived from the PIN. The server stores the
+// blob but never sees the key, and cannot unwrap it without the PIN.
+async function wrapKeyForPin(rawKey, pin) {
+  const salt = crypto.getRandomValues(new Uint8Array(16));
+  const key = await deriveKey(pin, salt);
+  const iv = crypto.getRandomValues(new Uint8Array(12));
+  const ct = await subtle.encrypt({ name: 'AES-GCM', iv: iv }, key, rawKey);
+  const packed = new Uint8Array(iv.length + ct.byteLength);
+  packed.set(iv, 0);
+  packed.set(new Uint8Array(ct), iv.length);
+  return { wrapped: toB64u(packed), salt: toB64u(salt) };
+}
+
+async function unwrapKeyFromPin(wrapped, salt, pin) {
+  const packed = fromB64u(wrapped);
+  const iv = packed.slice(0, 12);
+  const ct = packed.slice(12);
+  const key = await deriveKey(pin, fromB64u(salt));
+  const raw = await subtle.decrypt({ name: 'AES-GCM', iv: iv }, key, ct);
+  return new Uint8Array(raw);
 }
 
 async function encryptPayload(payload, password) {
@@ -271,19 +312,45 @@ async function generateLink() {
     const cipher = await encryptPayload({ v: 2, t: text }, password);
     const expiresAt = expiryMinutes > 0 ? new Date(Date.now() + expiryMinutes * 60000).toISOString() : null;
 
-    const created = await rpc('create_clip', {
-      p_ciphertext: cipher.ciphertext,
-      p_iv: cipher.iv,
-      p_salt: cipher.salt,
-      p_mode: cipher.mode,
-      p_expires_at: expiresAt,
-      p_max_views: views > 0 ? views : null
-    });
+    // A PIN only makes sense for key-mode clips: password clips have no standalone
+    // key to wrap, and the server refuses the combination.
+    let created = null;
+    let pin = null;
+    for (let attempt = 0; attempt < 3 && !created; attempt++) {
+      pin = cipher.rawKey ? randomPin() : null;
+      let wrapped = null;
+      if (pin) {
+        const w = await wrapKeyForPin(cipher.rawKey, pin);
+        wrapped = w;
+      }
+      try {
+        created = await rpc('create_clip', {
+          p_ciphertext: cipher.ciphertext,
+          p_iv: cipher.iv,
+          p_salt: cipher.salt,
+          p_mode: cipher.mode,
+          p_expires_at: expiresAt,
+          p_max_views: views > 0 ? views : null,
+          p_pin: pin,
+          p_pin_wrapped: wrapped ? wrapped.wrapped : null,
+          p_pin_salt: wrapped ? wrapped.salt : null
+        });
+      } catch (err) {
+        if (err instanceof ApiError && err.code === 'pin_taken' && attempt < 2) continue;
+        throw err;
+      }
+    }
 
     const base = window.location.href.split('?')[0].split('#')[0];
     const clipUrl = base + '?c=' + created.id + (cipher.rawKey ? '#k=' + toB64u(cipher.rawKey) : '');
 
     el('share-link').innerText = clipUrl;
+    if (pin) {
+      el('pin-value').textContent = pin;
+      el('pin-block').classList.remove('hidden');
+    } else {
+      el('pin-block').classList.add('hidden');
+    }
     el('result-area').classList.remove('hidden');
     el('result-meta').textContent = describePolicy(views, expiryMinutes);
     renderQr(clipUrl);
@@ -409,6 +476,57 @@ function renderClip(payload, meta) {
   showView('read-view');
 }
 
+/* ---------- redeem by PIN ---------- */
+
+async function redeemPin() {
+  if (state.busy) return;
+  const input = el('pin-input');
+  const pin = input.value.trim();
+  const errBox = el('pin-error');
+  errBox.classList.add('hidden');
+  errBox.textContent = '';
+
+  if (!/^[0-9]{4}$/.test(pin)) {
+    errBox.textContent = 'Enter the 4 digits.';
+    errBox.classList.remove('hidden');
+    return;
+  }
+
+  const btn = el('pin-btn');
+  btn.disabled = true;
+  btn.textContent = 'Checking\u2026';
+  try {
+    const res = await rpc('redeem_pin', { p_pin: pin });
+
+    if (!res || !res.ok) {
+      errBox.textContent = FRIENDLY[res && res.error ? res.error : 'invalid_pin'];
+      errBox.classList.remove('hidden');
+      return;
+    }
+
+    // The server verified the PIN and handed back the wrapped key; the key itself
+    // is unwrapped here, in the browser, using the PIN the user typed.
+    const rawKey = await unwrapKeyFromPin(res.pin_wrapped, res.pin_salt, pin);
+    const payload = await decryptPayload(
+      { ciphertext: res.ciphertext, iv: res.iv, salt: null, mode: 'k' },
+      rawKey,
+      'key'
+    );
+    input.value = '';
+    renderClip(payload, res);
+  } catch (err) {
+    if (err instanceof ApiError) {
+      errBox.textContent = friendly(err.code);
+    } else {
+      errBox.textContent = 'That PIN opened a clip, but its contents could not be decrypted.';
+    }
+    errBox.classList.remove('hidden');
+  } finally {
+    btn.disabled = false;
+    btn.textContent = 'Open';
+  }
+}
+
 /* ---------- history ---------- */
 
 function readHistory() {
@@ -528,6 +646,13 @@ function bindUI() {
   on('copy-content-btn', 'click', function () { copyText(state.rawText, 'Content copied'); });
   on('new-clip-btn', 'click', function () { window.location.href = window.location.pathname; });
   on('new-clip-btn-2', 'click', function () { window.location.href = window.location.pathname; });
+  on('pin-btn', 'click', redeemPin);
+  on('pin-input', 'keydown', function (e) {
+    if (e.key === 'Enter') { e.preventDefault(); redeemPin(); }
+  });
+  on('pin-input', 'input', function () {
+    el('pin-input').value = el('pin-input').value.replace(/[^0-9]/g, '').slice(0, 4);
+  });
 
   updateLengthHint();
 }
