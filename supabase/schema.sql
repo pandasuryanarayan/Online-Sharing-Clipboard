@@ -125,6 +125,10 @@ revoke all on public.clips from public, anon, authenticated;
 -- 6. Internal helpers
 -- ---------------------------------------------------------------------------
 
+-- The client address must not be forgeable, or every per-IP rate limit below can be
+-- bypassed by rotating a fake hop. cf-connecting-ip is preferred because Cloudflare
+-- overwrites it with the real peer; otherwise the last hop of x-forwarded-for is
+-- used, since proxies append and only the final entry comes from a trusted proxy.
 create or replace function public.secure_ip_hash()
 returns text
 language plpgsql
@@ -134,13 +138,24 @@ as $$
 declare
     v_headers jsonb;
     v_ip text;
+    v_xff text;
 begin
     v_headers := coalesce(nullif(current_setting('request.headers', true), ''), '{}')::jsonb;
-    v_ip := split_part(coalesce(v_headers ->> 'x-forwarded-for', ''), ',', 1);
-    v_ip := trim(v_ip);
+
+    -- Cloudflare sets this and overwrites any client-supplied value.
+    v_ip := trim(coalesce(v_headers ->> 'cf-connecting-ip', ''));
+
+    if v_ip = '' then
+        -- Proxies append, so the last hop is the one added closest to the server;
+        -- everything before it is client-controlled and must not be trusted.
+        v_xff := coalesce(v_headers ->> 'x-forwarded-for', '');
+        v_ip := trim(regexp_replace(v_xff, '^.*,', ''));
+    end if;
+
     if v_ip = '' then
         v_ip := 'unknown';
     end if;
+
     return encode(digest(v_ip, 'sha256'), 'hex');
 end;
 $$;
