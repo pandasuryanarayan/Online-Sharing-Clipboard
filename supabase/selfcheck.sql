@@ -138,4 +138,23 @@ select 'the retirement log is not reachable from the API',
        'anon select: ' || has_table_privilege('anon', 'private.pin_history', 'SELECT')::text
        || ', authenticated select: ' || has_table_privilege('authenticated', 'private.pin_history', 'SELECT')::text
 
+union all
+
+-- Functions get EXECUTE for PUBLIC by default, so a function created without an
+-- explicit REVOKE is callable by every role in the database. That is exactly how
+-- create_clip() once drifted, and nothing else here would have noticed.
+select 'no function is executable by PUBLIC',
+       not exists (
+           select 1 from pg_proc p join pg_namespace n on n.oid = p.pronamespace
+            where n.nspname in ('public', 'private')
+              and (p.proacl is null
+                   or exists (select 1 from aclexplode(p.proacl) a where a.grantee = 0))
+       ),
+       coalesce((select string_agg(p.proname, ', ')
+                   from pg_proc p join pg_namespace n on n.oid = p.pronamespace
+                  where n.nspname in ('public', 'private')
+                    and (p.proacl is null
+                         or exists (select 1 from aclexplode(p.proacl) a where a.grantee = 0))),
+                'none')
+
 order by check_name;
