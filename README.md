@@ -102,10 +102,10 @@ Supporting tables live in the non-exposed `private` schema: `pin_attempts` (rate
 
 ```sh
 # rebuild a fresh project
-psql \"$DATABASE_URL\" -f supabase/schema.sql
+psql "$DATABASE_URL" -f supabase/schema.sql
 
 # verify, in the SQL editor or via psql
-psql \"$DATABASE_URL\" -f supabase/selfcheck.sql   # every row must read passed = true
+psql "$DATABASE_URL" -f supabase/selfcheck.sql   # every row must read passed = true
 ```
 
 ## Security model
