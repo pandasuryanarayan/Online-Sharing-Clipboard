@@ -110,10 +110,7 @@
                 <div id="share-link" class="code-block"></div>
                 <div class="options-grid">
                     <button class="secondary" id="copy-link-btn" type="button">📋 Copy link</button>
-                    <button class="secondary" id="copy-manage-btn" type="button">🔑 Copy manage link</button>
                 </div>
-                <p class="label-small">Manage link (keep this private — it can delete the clip)</p>
-                <div id="manage-link" class="code-block subtle-block"></div>
                 <p class="advisory">Send the link over a channel you trust. Without a password the decryption key rides in the link after the <code>#</code>, which browsers never send to a server.</p>
             </div>
         </section>
@@ -144,17 +141,6 @@
                 <button id="copy-content-btn" type="button">Copy content</button>
                 <button class="secondary" id="new-clip-btn" type="button">Create new clip</button>
             </div>
-        </section>
-
-        <section id="manage-view" class="hidden">
-            <h2>Manage clip</h2>
-            <p id="manage-status" class="lede"></p>
-            <div id="manage-body">
-                <p id="manage-created" class="label-small"></p>
-                <p id="manage-expires" class="label-small"></p>
-            </div>
-            <button class="danger" id="manage-delete" type="button">Delete this clip</button>
-            <p class="advisory">Deleting is immediate and permanent. Anyone still holding the link will get nothing.</p>
         </section>
 
         <section id="error-view" class="hidden">
