@@ -97,7 +97,7 @@
                 </div>
             </div>
 
-            <label class="field-label" for="password-input">Password (optional, extra layer)</label>
+            <label class="field-label" for="password-input">Password (optional — setting one turns off PIN access)</label>
             <input type="password" id="password-input" placeholder="Leave empty for a one-click link" autocomplete="new-password">
 
             <div class="pin-redeem">
@@ -121,6 +121,7 @@
                     <div id="pin-value" class="pin-value"></div>
                     <p class="advisory">Read this out over a call, or send it by a different channel. Anyone with the PIN can open this clip without the link, and it dies when the clip does.</p>
                 </div>
+                <p id="no-pin-note" class="advisory hidden">No PIN for this clip: a 4-digit PIN would be weaker than the password you set, so it is not offered. Leave the password empty if you want a PIN instead.</p>
                 <p class="label-small">Share link</p>
                 <div id="share-link" class="code-block"></div>
                 <div class="options-grid">
