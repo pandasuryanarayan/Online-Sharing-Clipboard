@@ -345,12 +345,20 @@ async function generateLink() {
     const clipUrl = base + '?c=' + created.id + (cipher.rawKey ? '#k=' + toB64u(cipher.rawKey) : '');
 
     el('share-link').innerText = clipUrl;
-    if (pin) {
-      el('pin-value').textContent = pin;
-      el('pin-block').classList.remove('hidden');
-    } else {
-      el('pin-block').classList.add('hidden');
+
+    // A PIN is only issued for key-mode clips. Say so out loud rather than
+    // leaving the user hunting for a PIN that was never going to appear.
+    const pinBlock = el('pin-block');
+    const pinNote = el('no-pin-note');
+    if (pinBlock) {
+      if (pin) {
+        el('pin-value').textContent = pin;
+        pinBlock.classList.remove('hidden');
+      } else {
+        pinBlock.classList.add('hidden');
+      }
     }
+    if (pinNote) pinNote.classList.toggle('hidden', !!pin);
     el('result-area').classList.remove('hidden');
     el('result-meta').textContent = describePolicy(views, expiryMinutes);
     renderQr(clipUrl);
