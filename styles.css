@@ -110,7 +110,7 @@ h3 { margin: 22px 0 10px; font-size: 1.05rem; }
 
 .field-label { display: block; margin: 0 0 6px; font-size: 0.85rem; font-weight: 600; }
 
-textarea, input[type="password"], select {
+textarea, input[type="password"], input[type="text"], select {
     width: 100%;
     padding: 12px 14px;
     border: 1px solid var(--border);
@@ -342,4 +342,43 @@ button.mini { width: auto; padding: 5px 10px; font-size: 0.78rem; font-weight: 5
 
 @media (prefers-reduced-motion: reduce) {
     * { animation-duration: 0.001ms !important; transition-duration: 0.001ms !important; }
+}
+
+/* ---------- pin ---------- */
+
+.pin-redeem {
+    margin: 4px 0 18px;
+    padding: 14px;
+    border: 1px dashed var(--border);
+    border-radius: 10px;
+}
+
+.pin-row { display: flex; gap: 10px; }
+.pin-row input {
+    margin-bottom: 0;
+    letter-spacing: 0.5em;
+    text-align: center;
+    font-family: ui-monospace, "SF Mono", Consolas, monospace;
+    font-size: 1.15rem;
+    font-weight: 600;
+}
+.pin-row button { width: auto; min-width: 96px; }
+.pin-row + .error { margin-top: 10px; }
+
+.pin-block {
+    margin: 16px 0;
+    padding: 14px;
+    border-radius: 10px;
+    background: rgba(79, 70, 229, 0.08);
+    border: 1px solid var(--primary);
+}
+
+.pin-value {
+    font-family: ui-monospace, "SF Mono", Consolas, monospace;
+    font-size: 2rem;
+    font-weight: 700;
+    letter-spacing: 0.35em;
+    color: var(--primary);
+    text-align: center;
+    padding: 4px 0 2px;
 }
