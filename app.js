@@ -1,6 +1,6 @@
 /* SecureShare Pro — client-side crypto, server-side lifecycle.
  * The browser does the encryption; the database enforces expiry, one-time reads,
- * revocation and rate limits. The server only ever holds ciphertext. */
+ * and rate limits. The server only ever holds ciphertext. */
 'use strict';
 
 const API_URL = window.__SS_API_URL__ || 'https://drapuwslrdtinaobqrlp.supabase.co';
@@ -65,7 +65,7 @@ const FRIENDLY = {
   rate_limited: 'Too many clips created from this connection in the last hour. Try again later.',
   clip_not_found: 'This clip is gone. It has been opened the allowed number of times, expired, or was deleted by its sender.',
   clip_gone: 'This clip has expired.',
- invalid_expiry: 'That expiry time is not allowed.',
+  invalid_expiry: 'That expiry time is not allowed.',
   invalid_max_views: 'That view limit is not allowed.',
   missing_salt: 'This link is incomplete.',
   invalid_payload: 'This link is incomplete.',
@@ -149,7 +149,7 @@ async function decryptPayload(cipher, secret, mode) {
 /* ---------- markdown sanitiser ---------- */
 
 const ALLOWED_TAGS = new Set([
-  'P', 'BR', 'HR', 'STRONG', 'B', 'EM', 'I', 'DEM', 'S', 'CODE', 'PRE',
+  'P', 'BR', 'HR', 'STRONG', 'B', 'EM', 'I', 'DEL', 'S', 'CODE', 'PRE',
   'BLOCKQUOTE', 'UL', 'OL', 'LI', 'H1', 'H2', 'H3', 'H4', 'H5', 'H6',
   'A', 'TABLE', 'THEAD', 'TBODY', 'TR', 'TH', 'TD', 'SPAN', 'DIV'
 ]);
@@ -164,7 +164,7 @@ function sanitizeHtml(html) {
   let guard = 0;
   for (;;) {
     const bad = Array.prototype.filter.call(body.querySelectorAll('*'), function (node) {
-      return !AlLOWED_TAGS.has(node.tagName);
+      return !ALLOWED_TAGS.has(node.tagName);
     });
     if (!bad.length || guard++ > 60) break;
     bad.forEach(function (node) {
